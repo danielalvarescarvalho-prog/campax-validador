@@ -7,189 +7,110 @@
 <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { 
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-  color: #222;
-  padding: 20px;
-  min-height: 100vh;
-}
-.container { max-width: 1600px; margin: 0 auto; }
-header {
-  background: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-header h1 { font-size: 32px; color: #1e3c72; margin-bottom: 5px; }
-header p { color: #666; font-size: 14px; }
-.upload-area {
-  background: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  border: 2px dashed #2a5298;
-  text-align: center;
-}
-.upload-box { padding: 20px; }
-.upload-box p { color: #666; margin: 10px 0; }
-.btn {
-  padding: 12px 30px;
-  background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s;
-  margin: 5px;
-}
-.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(42, 82, 152, 0.4); }
-.btn-secondary { background: #6c757d; }
-#fileInput { display: none; }
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 15px;
-  margin-bottom: 20px;
-}
-.grid-4 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin-bottom: 20px;
-}
-.card {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  border-top: 4px solid #2a5298;
-}
-.card h3 { font-size: 13px; color: #666; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-.kpi { font-size: 32px; font-weight: 700; color: #1e3c72; margin: 10px 0; }
-.kpi.positive { color: #27ae60; }
-.kpi.negative { color: #e74c3c; }
-.subtitle { font-size: 12px; color: #999; margin-top: 5px; }
-.tabs {
-  display: flex;
-  gap: 0;
-  margin-bottom: 20px;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-.tab-btn {
-  flex: 1;
-  padding: 15px;
-  background: #f5f5f5;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  color: #666;
-  transition: all 0.3s;
-  border-bottom: 3px solid transparent;
-}
-.tab-btn.active { background: #2a5298; color: #fff; border-bottom-color: #2a5298; }
-.tab-content { display: none; background: #fff; padding: 20px; border-radius: 0 0 10px 10px; }
-.tab-content.active { display: block; }
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-th {
-  background: #2a5298;
-  color: #fff;
-  padding: 10px;
-  text-align: left;
-  font-weight: 600;
-}
-td {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
-tr:hover td { background: #f9f9f9; }
-.tot td { background: #eaf4fb; font-weight: 700; }
-.chart-container {
-  position: relative;
-  height: 300px;
-  margin: 20px 0;
-}
-.alert {
-  padding: 12px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  font-size: 13px;
-  border-left: 4px solid;
-}
-.alert-success { background: #d5f4e6; border-color: #27ae60; color: #145a32; }
-.alert-warning { background: #fef5e7; border-color: #f39c12; color: #6d4c1f; }
-.alert-danger { background: #fadbd8; border-color: #e74c3c; color: #78281f; }
-.badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  background: #eee;
-  color: #333;
-}
-.badge.success { background: #d5f4e6; color: #145a32; }
-.badge.warning { background: #fef5e7; color: #6d4c1f; }
-.badge.danger { background: #fadbd8; color: #78281f; }
-.loading { display: none; text-align: center; padding: 20px; }
-.spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #2a5298;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 10px;
-}
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-.sugestoes {
-  background: #f0f4f8;
-  padding: 15px;
-  border-radius: 6px;
-  margin: 15px 0;
-  border-left: 4px solid #2a5298;
-}
-.sugestoes h4 { color: #1e3c72; margin-bottom: 10px; }
-.sugestoes ul { margin-left: 20px; font-size: 13px; line-height: 1.8; }
-@media (max-width: 768px) {
-  .grid-2, .grid-4 { grid-template-columns: 1fr; }
-  header h1 { font-size: 22px; }
-  .kpi { font-size: 24px; }
-  .tabs { flex-direction: column; }
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh;padding:20px;color:#222}
+.wrap{max-width:1500px;margin:0 auto}
+header{background:#fff;padding:24px 28px;border-radius:12px;margin-bottom:20px;display:flex;align-items:center;gap:18px;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+header h1{font-size:26px;color:#1e3c72;margin-bottom:4px}
+header p{color:#666;font-size:13px}
+.painel-upload{background:#fff;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.painel-upload h2{font-size:15px;color:#1e3c72;margin-bottom:16px;border-bottom:2px solid #eee;padding-bottom:10px}
+.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.upload-box{border:2px dashed #2a5298;border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:.3s;position:relative}
+.upload-box:hover,.upload-box.dragover{background:#eef4ff}
+.upload-box input{display:none}
+.upload-box .icon{font-size:36px;margin-bottom:8px}
+.upload-box h3{font-size:14px;color:#1e3c72;margin-bottom:6px}
+.upload-box p{font-size:12px;color:#999}
+.upload-box .status{margin-top:10px;font-size:12px;font-weight:600;color:#27ae60}
+.btn{padding:10px 22px;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;transition:.3s;margin:4px}
+.btn-primary{background:linear-gradient(135deg,#2a5298,#1e3c72);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(42,82,152,.4)}
+.btn-success{background:#27ae60;color:#fff}
+.btn-danger{background:#e74c3c;color:#fff}
+.btn-sm{padding:7px 14px;font-size:11px}
+.acoes{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid #eee}
+.meses-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.mes-tag{background:#eef4ff;border:1px solid #2a5298;color:#2a5298;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.mes-tag button{background:none;border:none;cursor:pointer;color:#e74c3c;font-size:14px;line-height:1;padding:0}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:16px;margin-bottom:16px}
+.card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);border-top:4px solid #2a5298}
+.card h3{font-size:11px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.kpi{font-size:30px;font-weight:700;color:#1e3c72;margin:6px 0}
+.kpi.g{color:#27ae60}.kpi.r{color:#e74c3c}.kpi.b{color:#2980b9}.kpi.o{color:#f39c12}
+.sub{font-size:11px;color:#aaa;margin-top:4px}
+.tabs{display:flex;background:#fff;border-radius:10px 10px 0 0;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.tab-btn{flex:1;padding:14px 8px;background:#f0f4f8;border:none;cursor:pointer;font-weight:600;font-size:12px;color:#666;transition:.3s}
+.tab-btn.active{background:#2a5298;color:#fff}
+.tab-pane{display:none;background:#fff;padding:24px;border-radius:0 0 10px 10px;box-shadow:0 4px 10px rgba(0,0,0,.1);margin-bottom:20px}
+.tab-pane.active{display:block}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#2a5298;color:#fff;padding:10px;text-align:left;font-weight:600}
+td{padding:9px 10px;border-bottom:1px solid #eee}
+tr:hover td{background:#fafafa}
+.tr-tot td{background:#eaf4fb;font-weight:700;border-top:2px solid #2a5298}
+.tr-rec td{background:#f0fff4}
+.chart-box{position:relative;height:280px;margin:14px 0}
+.al{padding:13px 15px;border-radius:6px;margin-bottom:12px;font-size:13px;border-left:4px solid;line-height:1.6}
+.al-ok{background:#d5f4e6;border-color:#27ae60;color:#145a32}
+.al-warn{background:#fef5e7;border-color:#f39c12;color:#6d4c1f}
+.al-err{background:#fadbd8;border-color:#e74c3c;color:#78281f}
+.al-info{background:#d6eaf8;border-color:#2980b9;color:#1a5276}
+.bk{display:inline-block;padding:3px 9px;border-radius:4px;font-size:11px;font-weight:600}
+.bk-ok{background:#d5f4e6;color:#145a32}
+.bk-warn{background:#fef5e7;color:#6d4c1f}
+.bk-err{background:#fadbd8;color:#78281f}
+.loading{display:none;text-align:center;padding:30px;background:#fff;border-radius:12px;margin-bottom:20px}
+.spinner{border:4px solid #f3f3f3;border-top:4px solid #2a5298;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:0 auto 12px}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@media(max-width:768px){.upload-grid,.grid-2,.grid-4{grid-template-columns:1fr}.tabs{flex-direction:column}.kpi{font-size:22px}}
 </style>
 </head>
 <body>
-
-<div class="container">
+<div class="wrap">
 
 <header>
-  <h1>📊 Dashboard Executivo — Campax</h1>
-  <p>Sistema Completo de Gestão Financeira com DRE, EBITDA e Projeções</p>
+  <div style="font-size:44px">📊</div>
+  <div>
+    <h1>Dashboard Executivo — Campax</h1>
+    <p>DRE Consolidado · EBITDA · Projeções · Recomendações · Histórico Mensal</p>
+  </div>
 </header>
 
-<div class="upload-area">
-  <div class="upload-box">
-    <h3>📁 Carregue Seus Dados Mensais</h3>
-    <p>Arraste um arquivo Excel ou clique para selecionar</p>
-    <p style="font-size:11px;color:#999">Estrutura: Data | Código | Descrição | Entrada | Saída</p>
-    <input type="file" id="fileInput" accept=".xlsx,.xls">
-    <button class="btn" onclick="document.getElementById('fileInput').click()">Selecionar Arquivo</button>
-    <button class="btn btn-secondary" onclick="limparDados()">Limpar Todos os Dados</button>
-    <button class="btn btn-secondary" onclick="exportarDados()">📥 Exportar Dados</button>
+<!-- PAINEL DE UPLOAD -->
+<div class="painel-upload">
+  <h2>📁 Carregar Dados</h2>
+  <div class="upload-grid">
+
+    <!-- Excel -->
+    <div class="upload-box" id="dzExcel">
+      <input type="file" id="inExcel" accept=".xlsx,.xls">
+      <div class="icon">📊</div>
+      <h3>1. Arquivo Excel do Mês</h3>
+      <p>Arraste ou clique para selecionar o Excel mensal</p>
+      <p style="margin-top:6px;font-size:11px;color:#aaa">Colunas: Data | Código | Descrição | Entrada | Saída</p>
+      <div class="status" id="statusExcel">Nenhum arquivo selecionado</div>
+    </div>
+
+    <!-- JSON backup -->
+    <div class="upload-box" id="dzJson">
+      <input type="file" id="inJson" accept=".json">
+      <div class="icon">💾</div>
+      <h3>2. Backup Anterior (opcional)</h3>
+      <p>No primeiro mês, pule esta etapa.<br>Nos próximos meses, carregue o backup salvo.</p>
+      <div class="status" id="statusJson">Nenhum backup carregado</div>
+    </div>
+
   </div>
+
+  <div class="acoes">
+    <button class="btn btn-primary" onclick="processar()">▶ Processar e Consolidar</button>
+    <button class="btn btn-success btn-sm" onclick="salvarBackup()">💾 Salvar Backup (JSON)</button>
+    <button class="btn btn-danger btn-sm" onclick="limparMes()">🗑️ Remover Mês Selecionado</button>
+  </div>
+
+  <div class="meses-tags" id="mesesTags"></div>
 </div>
 
 <div id="loading" class="loading">
@@ -199,430 +120,389 @@ tr:hover td { background: #f9f9f9; }
 
 <div id="results" style="display:none">
 
-<!-- KPIs PRINCIPAIS -->
+<!-- KPIs -->
 <div class="grid-4">
   <div class="card">
     <h3>Receita Total (Ano)</h3>
-    <div class="kpi positive" id="receitaAnual">R$ 0</div>
-    <div class="subtitle" id="receitaMeses">0 meses</div>
+    <div class="kpi g" id="kRec">R$ 0</div>
+    <div class="sub" id="kRecSub">0 meses</div>
   </div>
   <div class="card">
     <h3>Despesa Total (Ano)</h3>
-    <div class="kpi negative" id="despesaAnual">R$ 0</div>
-    <div class="subtitle" id="despesaMeses">0 meses</div>
+    <div class="kpi r" id="kDesp">R$ 0</div>
+    <div class="sub" id="kDespSub">—</div>
   </div>
   <div class="card">
     <h3>Resultado Líquido</h3>
-    <div class="kpi" id="resultadoAnual">R$ 0</div>
-    <div class="subtitle" id="margemAnual">Margem: 0%</div>
+    <div class="kpi" id="kRes">R$ 0</div>
+    <div class="sub" id="kResSub">Margem: 0%</div>
   </div>
   <div class="card">
     <h3>EBITDA (Meta 25%)</h3>
-    <div class="kpi" id="ebitdaValor">R$ 0</div>
-    <div class="subtitle" id="ebitdaMeta"><span class="badge">Analisando...</span></div>
+    <div class="kpi b" id="kEbitda">R$ 0</div>
+    <div class="sub" id="kEbitdaSub">—</div>
   </div>
 </div>
 
 <!-- TABS -->
 <div class="tabs">
-  <button class="tab-btn active" onclick="abrirTab('dre', this)">📈 DRE Consolidado</button>
-  <button class="tab-btn" onclick="abrirTab('graficos', this)">📊 Gráficos</button>
-  <button class="tab-btn" onclick="abrirTab('comparativo', this)">📉 Comparativo Mensal</button>
-  <button class="tab-btn" onclick="abrirTab('projecao', this)">🔮 Projeção</button>
-  <button class="tab-btn" onclick="abrirTab('sugestoes', this)">💡 Recomendações</button>
+  <button class="tab-btn active" onclick="tab('dre',this)">📈 DRE</button>
+  <button class="tab-btn" onclick="tab('mensal',this)">📅 Mensal</button>
+  <button class="tab-btn" onclick="tab('graficos',this)">📊 Gráficos</button>
+  <button class="tab-btn" onclick="tab('projecao',this)">🔮 Projeção</button>
+  <button class="tab-btn" onclick="tab('rec',this)">💡 Recomendações</button>
 </div>
 
-<!-- TAB 1: DRE -->
-<div id="dre" class="tab-content active">
-  <h3>Demonstração de Resultado do Exercício (DRE) - Ano 2026</h3>
-  <table id="tabDRE" style="margin-top:20px">
-    <thead>
-      <tr><th>Descrição</th><th style="text-align:right">Valor</th><th style="text-align:right">% da Receita</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<div id="dre" class="tab-pane active">
+  <h3 style="margin-bottom:16px">DRE — Demonstração de Resultado do Exercício 2026</h3>
+  <table><thead><tr><th>Descrição</th><th style="text-align:right">Valor</th><th style="text-align:right">% Receita</th><th>Status</th></tr></thead>
+  <tbody id="tbDRE"></tbody></table>
 </div>
 
-<!-- TAB 2: GRÁFICOS -->
-<div id="graficos" class="tab-content">
+<div id="mensal" class="tab-pane">
+  <h3 style="margin-bottom:16px">Comparativo Mensal</h3>
+  <table><thead><tr><th>Mês</th><th style="text-align:right">Receita</th><th style="text-align:right">Despesa</th><th style="text-align:right">Resultado</th><th style="text-align:right">Margem</th><th style="text-align:right">Meta EBITDA</th><th>Status</th></tr></thead>
+  <tbody id="tbMensal"></tbody></table>
+</div>
+
+<div id="graficos" class="tab-pane">
   <div class="grid-2">
-    <div>
-      <h3>Receita vs Despesa (Mensal)</h3>
-      <div class="chart-container"><canvas id="chartTendencia"></canvas></div>
-    </div>
-    <div>
-      <h3>Composição de Despesas</h3>
-      <div class="chart-container"><canvas id="chartDespesas"></canvas></div>
-    </div>
-    <div>
-      <h3>Resultado Progressivo</h3>
-      <div class="chart-container"><canvas id="chartResultado"></canvas></div>
-    </div>
-    <div>
-      <h3>Margem de Lucro (%)</h3>
-      <div class="chart-container"><canvas id="chartMargem"></canvas></div>
-    </div>
+    <div><h4>Receita vs Despesa</h4><div class="chart-box"><canvas id="cTend"></canvas></div></div>
+    <div><h4>Resultado Mensal</h4><div class="chart-box"><canvas id="cRes"></canvas></div></div>
+    <div><h4>Margem vs Meta 25%</h4><div class="chart-box"><canvas id="cMarg"></canvas></div></div>
+    <div><h4>Composição Despesas</h4><div class="chart-box"><canvas id="cDesp"></canvas></div></div>
   </div>
 </div>
 
-<!-- TAB 3: COMPARATIVO -->
-<div id="comparativo" class="tab-content">
-  <h3>Comparativo Mensal</h3>
-  <table id="tabComparativo" style="margin-top:20px">
-    <thead>
-      <tr><th>Mês</th><th style="text-align:right">Receita</th><th style="text-align:right">Despesa</th><th style="text-align:right">Resultado</th><th style="text-align:right">Margem</th><th>Tendência</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<div id="projecao" class="tab-pane">
+  <h3 style="margin-bottom:16px">Projeção — Próximos 6 Meses</h3>
+  <div id="projInfo"></div>
+  <div class="chart-box" style="height:300px"><canvas id="cProj"></canvas></div>
+  <div id="projTabela" style="margin-top:20px"></div>
 </div>
 
-<!-- TAB 4: PROJEÇÃO -->
-<div id="projecao" class="tab-content">
-  <h3>Projeção de Crescimento e Cenários</h3>
-  <div id="projecaoContent" style="margin-top:20px"></div>
-  <div class="chart-container" style="margin-top:20px">
-    <h3>Projeção Próximos 6 Meses</h3>
-    <canvas id="chartProjecao"></canvas>
-  </div>
+<div id="rec" class="tab-pane">
+  <h3 style="margin-bottom:16px">Recomendações Inteligentes</h3>
+  <div id="recContent"></div>
 </div>
 
-<!-- TAB 5: SUGESTÕES -->
-<div id="sugestoes" class="tab-content">
-  <h3>Recomendações Inteligentes</h3>
-  <div id="sugestoesContent" style="margin-top:20px"></div>
-</div>
-
-</div>
-
-</div>
+</div><!-- /results -->
+</div><!-- /wrap -->
 
 <script>
-const CATEGORIAS = {
-  '1':'Despesas Fixas','37':'Funcionários','38':'Funcionários Extra',
-  '39':'Fretes/Transportes','41':'Matéria Prima','43':'Taxas Bancárias',
-  '44':'Impostos','80':'Diversos','REC':'Receita'
-};
+const CATS = {'1':'Despesas Fixas','37':'Funcionários','38':'Func. Extra','39':'Fretes','41':'Matéria Prima','43':'Taxas Bancárias','44':'Impostos','80':'Diversos'};
+const ORDEM = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const META = 0.25;
 
-let dadosMeses = JSON.parse(localStorage.getItem('campaxMeses')) || {};
-let chartTendencia = null, chartDespesas = null, chartResultado = null, chartMargem = null, chartProjecao = null;
+let db = {};
+let charts = {};
+let excelPendente = null;
+let mesPendente = null;
 
-document.getElementById('fileInput').addEventListener('change', e => processar(e.target.files[0]));
+// DRAG AND DROP EXCEL
+const dzEx = document.getElementById('dzExcel');
+const inEx = document.getElementById('inExcel');
+dzEx.addEventListener('click', () => inEx.click());
+dzEx.addEventListener('dragover', e => { e.preventDefault(); dzEx.classList.add('dragover'); });
+dzEx.addEventListener('dragleave', () => dzEx.classList.remove('dragover'));
+dzEx.addEventListener('drop', e => { e.preventDefault(); dzEx.classList.remove('dragover'); carregarExcel(e.dataTransfer.files[0]); });
+inEx.addEventListener('change', e => carregarExcel(e.target.files[0]));
 
-function processar(file) {
+// DRAG AND DROP JSON
+const dzJs = document.getElementById('dzJson');
+const inJs = document.getElementById('inJson');
+dzJs.addEventListener('click', () => inJs.click());
+dzJs.addEventListener('dragover', e => { e.preventDefault(); dzJs.classList.add('dragover'); });
+dzJs.addEventListener('dragleave', () => dzJs.classList.remove('dragover'));
+dzJs.addEventListener('drop', e => { e.preventDefault(); dzJs.classList.remove('dragover'); carregarJson(e.dataTransfer.files[0]); });
+inJs.addEventListener('change', e => carregarJson(e.target.files[0]));
+
+function carregarExcel(file) {
   if (!file) return;
+  excelPendente = file;
+  mesPendente = extrairMes(file.name);
+  document.getElementById('statusExcel').textContent = '✅ ' + file.name + ' (' + mesPendente + ')';
+}
+
+function carregarJson(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const dados = JSON.parse(e.target.result);
+      db = dados;
+      document.getElementById('statusJson').textContent = '✅ Backup carregado: ' + Object.keys(db).join(', ');
+      atualizarTags();
+      if (Object.keys(db).length > 0) renderTudo();
+    } catch {
+      alert('Arquivo JSON inválido!');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function processar() {
+  if (!excelPendente) { alert('Selecione um arquivo Excel primeiro!'); return; }
   document.getElementById('loading').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
   const reader = new FileReader();
   reader.onload = e => {
     try {
       const wb = XLSX.read(e.target.result, { type: 'array' });
       const ws = wb.Sheets[wb.SheetNames[0]];
-      const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
-      const mesNome = extrairMes(file.name);
-      analisar(json, mesNome);
-      salvarDados();
-      renderizar();
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      db[mesPendente] = analisar(rows);
+      excelPendente = null;
+      document.getElementById('statusExcel').textContent = 'Nenhum arquivo selecionado';
+      document.getElementById('inExcel').value = '';
+      atualizarTags();
+      renderTudo();
     } catch(err) {
       alert('Erro: ' + err.message);
     }
     document.getElementById('loading').style.display = 'none';
   };
-  reader.readAsArrayBuffer(file);
+  reader.readAsArrayBuffer(excelPendente);
 }
 
-function analisar(json, mesNome) {
+function analisar(rows) {
   const rec = [], desp = [];
-  for (let i = 5; i < json.length; i++) {
-    const row = json[i];
-    if (!row || !row[0]) continue;
-    const codigo = String(row[1] || '').trim();
-    const descricao = String(row[2] || '').trim();
-    const entrada = parseFloat(row[3]) || 0;
-    const saida = parseFloat(row[4]) || 0;
-    if (codigo === 'REC' && entrada > 0) {
-      rec.push({ descricao, valor: entrada });
-    } else if (codigo !== 'REC' && saida > 0) {
-      desp.push({ codigo, descricao, valor: saida, categoria: CATEGORIAS[codigo] || 'Diversos' });
-    }
+  for (let i = 5; i < rows.length; i++) {
+    const r = rows[i];
+    if (!r || r.length < 3) continue;
+    const cod = String(r[1] || '').trim();
+    const desc = String(r[2] || '').trim();
+    const ent = parseFloat(r[3]) || 0;
+    const sai = parseFloat(r[4]) || 0;
+    if (!cod && !desc) continue;
+    if (cod === 'REC' && ent > 0) rec.push({ desc, valor: ent });
+    else if (cod && cod !== 'REC' && sai > 0) desp.push({ cod, desc, valor: sai, cat: CATS[cod] || 'Diversos' });
   }
-  const totalRec = rec.reduce((s, r) => s + r.valor, 0);
-  const totalDesp = desp.reduce((s, d) => s + d.valor, 0);
-  const resultado = totalRec - totalDesp;
-  const ebitda = (totalRec * 0.25);
-  
-  dadosMeses[mesNome] = {
-    receitas: rec,
-    despesas: desp,
-    totalRec,
-    totalDesp,
-    resultado,
-    ebitda,
-    margem: totalRec > 0 ? ((resultado / totalRec) * 100).toFixed(1) : 0,
-    timestamp: new Date().toISOString()
-  };
+  const tRec = rec.reduce((s, x) => s + x.valor, 0);
+  const tDesp = desp.reduce((s, x) => s + x.valor, 0);
+  const res = tRec - tDesp;
+  return { rec, desp, tRec, tDesp, res, margem: tRec > 0 ? (res / tRec) * 100 : 0 };
 }
 
-function salvarDados() {
-  localStorage.setItem('campaxMeses', JSON.stringify(dadosMeses));
+function mesesOrdenados() {
+  return Object.keys(db).sort((a, b) => ORDEM.indexOf(a) - ORDEM.indexOf(b));
 }
 
-function renderizar() {
-  const meses = Object.keys(dadosMeses).sort();
-  const totalRec = meses.reduce((s, m) => s + dadosMeses[m].totalRec, 0);
-  const totalDesp = meses.reduce((s, m) => s + dadosMeses[m].totalDesp, 0);
-  const resultado = totalRec - totalDesp;
-  const margem = totalRec > 0 ? ((resultado / totalRec) * 100).toFixed(1) : 0;
-  const ebitda = totalRec * 0.25;
+function atualizarTags() {
+  const meses = mesesOrdenados();
+  document.getElementById('mesesTags').innerHTML = meses.map(m =>
+    `<span class="mes-tag">✅ ${m} <button onclick="removerMes('${m}')" title="Remover">×</button></span>`
+  ).join('');
+}
 
-  document.getElementById('receitaAnual').textContent = fmt(totalRec);
-  document.getElementById('despesaAnual').textContent = fmt(totalDesp);
-  document.getElementById('resultadoAnual').textContent = fmt(resultado);
-  document.getElementById('resultadoAnual').className = 'kpi ' + (resultado >= 0 ? 'positive' : 'negative');
-  document.getElementById('margemAnual').textContent = 'Margem: ' + margem + '%';
-  document.getElementById('receitaMeses').textContent = meses.length + ' meses carregados';
-  document.getElementById('despesaMeses').textContent = meses.length + ' meses';
-  document.getElementById('ebitdaValor').textContent = fmt(ebitda);
-  document.getElementById('ebitdaMeta').innerHTML = resultado >= ebitda ? '<span class="badge success">✅ Acima da Meta</span>' : '<span class="badge warning">⚠️ Abaixo da Meta</span>';
+function removerMes(mes) {
+  if (!confirm('Remover ' + mes + ' dos dados?')) return;
+  delete db[mes];
+  atualizarTags();
+  if (Object.keys(db).length === 0) { document.getElementById('results').style.display = 'none'; return; }
+  renderTudo();
+}
 
-  // DRE
-  const tabDRE = document.querySelector('#tabDRE tbody');
-  tabDRE.innerHTML = `
-    <tr><td><strong>Receita Bruta</strong></td><td style="text-align:right"><strong>${fmt(totalRec)}</strong></td><td style="text-align:right"><strong>100%</strong></td></tr>
-    <tr><td>Despesas Operacionais</td><td style="text-align:right">${fmt(totalDesp)}</td><td style="text-align:right">${((totalDesp/totalRec)*100).toFixed(1)}%</td></tr>
-    <tr class="tot"><td><strong>EBITDA (25% Meta)</strong></td><td style="text-align:right"><strong>${fmt(ebitda)}</strong></td><td style="text-align:right"><strong>${((ebitda/totalRec)*100).toFixed(1)}%</strong></td></tr>
-    <tr class="tot"><td><strong>Resultado Líquido</strong></td><td style="text-align:right"><strong>${fmt(resultado)}</strong></td><td style="text-align:right"><strong>${margem}%</strong></td></tr>
-  `;
+function limparMes() {
+  const meses = mesesOrdenados();
+  if (meses.length === 0) { alert('Nenhum mês carregado.'); return; }
+  const mes = prompt('Digite o nome do mês para remover:\n' + meses.join(', '));
+  if (mes && db[mes]) removerMes(mes);
+  else if (mes) alert('Mês não encontrado.');
+}
 
-  // Comparativo
-  const tabComp = document.querySelector('#tabComparativo tbody');
-  tabComp.innerHTML = '';
-  meses.forEach(mes => {
-    const m = dadosMeses[mes];
-    tabComp.innerHTML += `<tr>
-      <td><strong>${mes}</strong></td>
-      <td style="text-align:right">${fmt(m.totalRec)}</td>
-      <td style="text-align:right">${fmt(m.totalDesp)}</td>
-      <td style="text-align:right" class="${m.resultado >= 0 ? 'positive' : 'negative'}"><strong>${fmt(m.resultado)}</strong></td>
-      <td style="text-align:right">${m.margem}%</td>
-      <td>${m.margem > 20 ? '<span class="badge success">↗️ Crescimento</span>' : '<span class="badge warning">↘️ Queda</span>'}</td>
-    </tr>`;
-  });
+function salvarBackup() {
+  if (Object.keys(db).length === 0) { alert('Nenhum dado para salvar!'); return; }
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'campax_backup_' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+}
 
-  renderizarGraficos(meses);
-  renderizarProjecao(meses);
-  renderizarSugestoes(totalRec, totalDesp, resultado, ebitda, margem);
+function renderTudo() {
+  const meses = mesesOrdenados();
+  const tRec = meses.reduce((s, m) => s + db[m].tRec, 0);
+  const tDesp = meses.reduce((s, m) => s + db[m].tDesp, 0);
+  const res = tRec - tDesp;
+  const margem = tRec > 0 ? (res / tRec) * 100 : 0;
+  const ebitda = tRec * META;
+
+  // KPIs
+  document.getElementById('kRec').textContent = fmt(tRec);
+  document.getElementById('kRecSub').textContent = meses.length + ' meses carregados';
+  document.getElementById('kDesp').textContent = fmt(tDesp);
+  document.getElementById('kDespSub').textContent = (tRec > 0 ? (tDesp/tRec*100).toFixed(1) : 0) + '% da receita';
+  const kR = document.getElementById('kRes');
+  kR.textContent = fmt(res);
+  kR.className = 'kpi ' + (res >= 0 ? 'g' : 'r');
+  document.getElementById('kResSub').textContent = 'Margem: ' + margem.toFixed(1) + '%';
+  document.getElementById('kEbitda').textContent = fmt(ebitda);
+  document.getElementById('kEbitdaSub').innerHTML = res >= ebitda
+    ? '<span class="bk bk-ok">✅ Acima da meta</span>'
+    : '<span class="bk bk-warn">⚠️ Abaixo da meta</span>';
+
+  renderDRE(meses, tRec, tDesp, res, ebitda);
+  renderMensal(meses, tRec, tDesp, res);
+  renderGraficos(meses);
+  renderProjecao(meses);
+  renderRec(tRec, tDesp, res, margem, ebitda, meses);
 
   document.getElementById('results').style.display = 'block';
 }
 
-function renderizarGraficos(meses) {
-  const dados = meses.map(m => dadosMeses[m]);
-
-  if (chartTendencia) chartTendencia.destroy();
-  chartTendencia = new Chart(document.getElementById('chartTendencia').getContext('2d'), {
-    type: 'line',
-    data: {
-      labels: meses,
-      datasets: [
-        { label: 'Receita', data: dados.map(d => d.totalRec), borderColor: '#27ae60', backgroundColor: 'rgba(39,174,96,0.1)', tension: 0.4, fill: true },
-        { label: 'Despesa', data: dados.map(d => d.totalDesp), borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.1)', tension: 0.4, fill: true }
-      ]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+function renderDRE(meses, tRec, tDesp, res, ebitda) {
+  const cats = {};
+  meses.forEach(m => db[m].desp.forEach(d => { cats[d.cat] = (cats[d.cat] || 0) + d.valor; }));
+  const p = v => tRec > 0 ? (v/tRec*100).toFixed(1) + '%' : '0%';
+  let h = `<tr class="tr-rec"><td><strong>(+) Receita Bruta</strong></td><td style="text-align:right"><strong>${fmt(tRec)}</strong></td><td style="text-align:right">100%</td><td><span class="bk bk-ok">Base</span></td></tr>`;
+  Object.entries(cats).sort((a,b) => b[1]-a[1]).forEach(([cat, val]) => {
+    h += `<tr><td>&nbsp;&nbsp;&nbsp;(-) ${cat}</td><td style="text-align:right">${fmt(val)}</td><td style="text-align:right">${p(val)}</td><td></td></tr>`;
   });
-
-  if (chartResultado) chartResultado.destroy();
-  chartResultado = new Chart(document.getElementById('chartResultado').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: meses,
-      datasets: [{ label: 'Resultado', data: dados.map(d => d.resultado), backgroundColor: dados.map(d => d.resultado >= 0 ? '#27ae60' : '#e74c3c') }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-  });
-
-  if (chartMargem) chartMargem.destroy();
-  chartMargem = new Chart(document.getElementById('chartMargem').getContext('2d'), {
-    type: 'line',
-    data: {
-      labels: meses,
-      datasets: [
-        { label: 'Margem Real', data: dados.map(d => parseFloat(d.margem)), borderColor: '#3498db', tension: 0.4 },
-        { label: 'Meta (25%)', data: Array(meses.length).fill(25), borderColor: '#f39c12', borderDash: [5, 5] }
-      ]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-  });
-
-  const despCats = {};
-  dados.forEach(d => d.despesas.forEach(x => {
-    if (!despCats[x.categoria]) despCats[x.categoria] = 0;
-    despCats[x.categoria] += x.valor;
-  }));
-
-  if (chartDespesas) chartDespesas.destroy();
-  chartDespesas = new Chart(document.getElementById('chartDespesas').getContext('2d'), {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(despCats),
-      datasets: [{ data: Object.values(despCats), backgroundColor: ['#3498db', '#e74c3c', '#f39c12', '#27ae60', '#9b59b6', '#1abc9c', '#34495e', '#e67e22'] }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-  });
-}
-
-function renderizarProjecao(meses) {
-  const dados = meses.map(m => dadosMeses[m]);
-  const ultimoMes = dados[dados.length - 1];
-  if (!ultimoMes) return;
-
-  const taxaCrescimento = dados.length > 1 ? ((ultimoMes.totalRec - dados[0].totalRec) / dados[0].totalRec) / (dados.length - 1) : 0;
-  const projecaoDados = [];
-  const proximosMeses = [];
-
-  for (let i = 1; i <= 6; i++) {
-    const mesProj = new Date();
-    mesProj.setMonth(mesProj.getMonth() + i);
-    const recProj = ultimoMes.totalRec * (1 + taxaCrescimento * i);
-    const despProj = recProj * (ultimoMes.totalDesp / ultimoMes.totalRec);
-    const resultProj = recProj - despProj;
-    proximosMeses.push(mesProj.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }));
-    projecaoDados.push({ rec: recProj, desp: despProj, result: resultProj });
-  }
-
-  document.getElementById('projecaoContent').innerHTML = `
-    <div class="sugestoes">
-      <h4>📈 Análise de Tendência</h4>
-      <p>Taxa de crescimento mensal: <strong>${(taxaCrescimento * 100).toFixed(2)}%</strong></p>
-      <p>Receita média estimada próximos 6 meses: <strong>${fmt(projecaoDados.reduce((s, p) => s + p.rec, 0) / 6)}</strong></p>
-      <p>Receita acumulada (próximos 6 meses): <strong>${fmt(projecaoDados.reduce((s, p) => s + p.rec, 0))}</strong></p>
-    </div>
+  h += `
+    <tr class="tr-tot"><td><strong>(-) Total Despesas</strong></td><td style="text-align:right"><strong>${fmt(tDesp)}</strong></td><td style="text-align:right"><strong>${p(tDesp)}</strong></td><td><span class="bk ${tDesp/tRec < 0.75 ? 'bk-ok':'bk-warn'}">${p(tDesp)} dos custos</span></td></tr>
+    <tr class="tr-tot"><td><strong>(=) EBITDA — Meta 25%</strong></td><td style="text-align:right"><strong>${fmt(ebitda)}</strong></td><td style="text-align:right"><strong>25,0%</strong></td><td><span class="bk bk-ok">Meta</span></td></tr>
+    <tr class="tr-tot"><td><strong>(=) Resultado Líquido</strong></td><td style="text-align:right"><strong>${fmt(res)}</strong></td><td style="text-align:right"><strong>${p(res)}</strong></td><td><span class="bk ${res >= ebitda ? 'bk-ok':'bk-warn'}">${res >= ebitda ? '✅ Meta atingida':'⚠️ Abaixo da meta'}</span></td></tr>
   `;
-
-  if (chartProjecao) chartProjecao.destroy();
-  chartProjecao = new Chart(document.getElementById('chartProjecao').getContext('2d'), {
-    type: 'line',
-    data: {
-      labels: proximosMeses,
-      datasets: [
-        { label: 'Receita Projetada', data: projecaoDados.map(p => p.rec), borderColor: '#27ae60', tension: 0.4 },
-        { label: 'Despesa Projetada', data: projecaoDados.map(p => p.desp), borderColor: '#e74c3c', tension: 0.4 },
-        { label: 'Resultado Projetado', data: projecaoDados.map(p => p.result), borderColor: '#3498db', tension: 0.4 }
-      ]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-  });
+  document.getElementById('tbDRE').innerHTML = h;
 }
 
-function renderizarSugestoes(rec, desp, resultado, ebitda, margem) {
-  const sugestoes = [];
+function renderMensal(meses, tRecTotal, tDespTotal, resTotal) {
+  let h = '';
+  meses.forEach((mes, i) => {
+    const m = db[mes];
+    const ant = i > 0 ? db[meses[i-1]] : null;
+    const tend = ant ? (m.tRec > ant.tRec ? '↗️' : m.tRec < ant.tRec ? '↘️' : '→') : '—';
+    const meta = m.tRec * META;
+    h += `<tr>
+      <td><strong>${mes}</strong> ${tend}</td>
+      <td style="text-align:right">${fmt(m.tRec)}</td>
+      <td style="text-align:right">${fmt(m.tDesp)}</td>
+      <td style="text-align:right;color:${m.res>=0?'#27ae60':'#e74c3c'}"><strong>${fmt(m.res)}</strong></td>
+      <td style="text-align:right">${m.margem.toFixed(1)}%</td>
+      <td style="text-align:right">${fmt(meta)}</td>
+      <td><span class="bk ${m.res>=meta?'bk-ok':'bk-warn'}">${m.res>=meta?'✅':'⚠️'}</span></td>
+    </tr>`;
+  });
+  const tMeta = tRecTotal * META;
+  h += `<tr class="tr-tot"><td><strong>TOTAL</strong></td><td style="text-align:right"><strong>${fmt(tRecTotal)}</strong></td><td style="text-align:right"><strong>${fmt(tDespTotal)}</strong></td><td style="text-align:right"><strong>${fmt(resTotal)}</strong></td><td style="text-align:right"><strong>${(resTotal/tRecTotal*100).toFixed(1)}%</strong></td><td style="text-align:right"><strong>${fmt(tMeta)}</strong></td><td></td></tr>`;
+  document.getElementById('tbMensal').innerHTML = h;
+}
 
-  if (resultado < ebitda) {
-    sugestoes.push({
-      tipo: 'danger',
-      titulo: '⚠️ EBITDA Abaixo da Meta',
-      msg: `Seu EBITDA está em ${fmt(resultado)} mas a meta é ${fmt(ebitda)}. Diferença: ${fmt(ebitda - resultado)}`
-    });
-  } else {
-    sugestoes.push({
-      tipo: 'success',
-      titulo: '✅ EBITDA Acima da Meta',
-      msg: `Parabéns! Você atingiu ${fmt(resultado)} acima da meta de ${fmt(ebitda)}`
-    });
+function renderGraficos(meses) {
+  const dados = meses.map(m => db[m]);
+  function novoChart(id, type, data, opts={}) {
+    if (charts[id]) charts[id].destroy();
+    charts[id] = new Chart(document.getElementById(id).getContext('2d'), { type, data, options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, ...opts } });
   }
-
-  if (margem < 15) {
-    sugestoes.push({
-      tipo: 'warning',
-      titulo: '💡 Reduzir Despesas',
-      recomendacoes: [
-        'Sua margem está em ' + margem + '% (ideal: 25%)',
-        'Priorize redução de despesas variáveis',
-        'Revise contratos com fornecedores',
-        'Otimize custos de pessoal'
-      ]
-    });
-  }
-
-  if (rec > 0) {
-    const economiaPotencial = rec * 0.1;
-    sugestoes.push({
-      tipo: 'success',
-      titulo: '💰 Oportunidade de Economia',
-      msg: `Se reduzir despesas em 10%, economiza ${fmt(economiaPotencial)} ao ano`
-    });
-  }
-
-  sugestoes.push({
-    tipo: 'success',
-    titulo: '🎯 Plano de Ação',
-    recomendacoes: [
-      'Manter receita em crescimento consistente',
-      'Monitorar despesas mensalmente',
-      'Atingir EBITDA de 25% é fundamental',
-      'Revisar dados trimestralmente'
+  novoChart('cTend', 'line', {
+    labels: meses,
+    datasets: [
+      { label:'Receita', data:dados.map(d=>d.tRec), borderColor:'#27ae60', backgroundColor:'rgba(39,174,96,0.1)', tension:0.4, fill:true },
+      { label:'Despesa', data:dados.map(d=>d.tDesp), borderColor:'#e74c3c', backgroundColor:'rgba(231,76,60,0.1)', tension:0.4, fill:true }
     ]
   });
-
-  let html = '';
-  sugestoes.forEach(s => {
-    html += `<div class="alert alert-${s.tipo === 'success' ? 'success' : s.tipo === 'warning' ? 'warning' : 'danger'}">
-      <strong>${s.titulo}</strong>`;
-    if (s.msg) html += `<p style="margin-top:8px">${s.msg}</p>`;
-    if (s.recomendacoes) {
-      html += '<ul style="margin-top:8px;margin-left:20px">';
-      s.recomendacoes.forEach(r => html += `<li>${r}</li>`);
-      html += '</ul>';
-    }
-    html += '</div>';
+  novoChart('cRes', 'bar', {
+    labels: meses,
+    datasets: [{ label:'Resultado', data:dados.map(d=>d.res), backgroundColor:dados.map(d=>d.res>=0?'rgba(39,174,96,.8)':'rgba(231,76,60,.8)') }]
   });
-
-  document.getElementById('sugestoesContent').innerHTML = html;
+  novoChart('cMarg', 'line', {
+    labels: meses,
+    datasets: [
+      { label:'Margem Real (%)', data:dados.map(d=>+d.margem.toFixed(1)), borderColor:'#9b59b6', tension:0.4 },
+      { label:'Meta 25%', data:Array(meses.length).fill(25), borderColor:'#f39c12', borderDash:[6,4], tension:0 }
+    ]
+  });
+  const cats = {};
+  dados.forEach(d => d.desp.forEach(x => { cats[x.cat]=(cats[x.cat]||0)+x.valor; }));
+  novoChart('cDesp', 'doughnut', {
+    labels: Object.keys(cats),
+    datasets: [{ data:Object.values(cats), backgroundColor:['#3498db','#e74c3c','#f39c12','#27ae60','#9b59b6','#1abc9c','#34495e','#e67e22'] }]
+  });
 }
 
-function abrirTab(nome, el) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+function renderProjecao(meses) {
+  const dados = meses.map(m => db[m]);
+  const n = dados.length;
+  const ultimo = dados[n-1];
+  const taxa = n > 1 ? ((ultimo.tRec - dados[0].tRec) / dados[0].tRec) / (n-1) : 0.05;
+  const taxaD = n > 1 ? ((ultimo.tDesp - dados[0].tDesp) / dados[0].tDesp) / (n-1) : 0.03;
+  const labels = [], pRec=[], pDesp=[], pRes=[], rows=[];
+  for (let i = 1; i <= 6; i++) {
+    const dt = new Date(); dt.setMonth(dt.getMonth()+i);
+    const label = dt.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+    const rec = ultimo.tRec * (1 + taxa*i);
+    const desp = ultimo.tDesp * (1 + taxaD*i);
+    const res = rec - desp;
+    labels.push(label); pRec.push(rec); pDesp.push(desp); pRes.push(res);
+    rows.push({label, rec, desp, res, m:(res/rec*100)});
+  }
+  document.getElementById('projInfo').innerHTML = `
+    <div class="al al-info">
+      <strong>📈 Tendência identificada:</strong> crescimento médio de <strong>${(taxa*100).toFixed(2)}%</strong> ao mês.<br>
+      Receita acumulada estimada para os próximos 6 meses: <strong>${fmt(pRec.reduce((s,v)=>s+v,0))}</strong>
+    </div>`;
+  if (charts['cProj']) charts['cProj'].destroy();
+  charts['cProj'] = new Chart(document.getElementById('cProj').getContext('2d'), {
+    type:'line',
+    data:{ labels, datasets:[
+      {label:'Receita',data:pRec,borderColor:'#27ae60',tension:0.4,fill:false},
+      {label:'Despesa',data:pDesp,borderColor:'#e74c3c',tension:0.4,fill:false},
+      {label:'Resultado',data:pRes,borderColor:'#2980b9',tension:0.4,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+  });
+  let tab = '<table><thead><tr><th>Mês</th><th style="text-align:right">Receita</th><th style="text-align:right">Despesa</th><th style="text-align:right">Resultado</th><th style="text-align:right">Margem</th></tr></thead><tbody>';
+  rows.forEach(r => { tab += `<tr><td>${r.label}</td><td style="text-align:right">${fmt(r.rec)}</td><td style="text-align:right">${fmt(r.desp)}</td><td style="text-align:right;color:${r.res>=0?'#27ae60':'#e74c3c'}">${fmt(r.res)}</td><td style="text-align:right">${r.m.toFixed(1)}%</td></tr>`; });
+  tab += '</tbody></table>';
+  document.getElementById('projTabela').innerHTML = tab;
+}
+
+function renderRec(tRec, tDesp, res, margem, ebitda, meses) {
+  const itens = [];
+  const dif = res - ebitda;
+  if (res >= ebitda) itens.push({tipo:'ok',icon:'🎯',titulo:'EBITDA Atingido!',msg:`Resultado ${fmt(res)} supera a meta ${fmt(ebitda)} em ${fmt(dif)}.`});
+  else itens.push({tipo:'err',icon:'⚠️',titulo:'EBITDA Abaixo da Meta',msg:`Faltam ${fmt(Math.abs(dif))} para atingir a meta de 25% (${fmt(ebitda)}).`});
+  if (margem < 15) itens.push({tipo:'warn',icon:'📉',titulo:'Margem Crítica',lista:['Margem atual: '+margem.toFixed(1)+'% — mínimo ideal é 20%','Renegocie os maiores contratos de custo','Analise cortes em despesas variáveis','Verifique oportunidades de aumento de receita']});
+  else if (margem < 25) itens.push({tipo:'warn',icon:'📊',titulo:'Margem Moderada — Pode Melhorar',lista:['Margem de '+margem.toFixed(1)+'% está próxima da meta de 25%','Foco em aumentar receita sem elevar custo proporcionalmente','Avalie novos contratos ou clientes']});
+  const cats = {};
+  meses.forEach(m => db[m].desp.forEach(d => { cats[d.cat]=(cats[d.cat]||0)+d.valor; }));
+  const top = Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
+  if (top) itens.push({tipo:'info',icon:'🔍',titulo:'Principal Despesa: '+top[0],msg:`${fmt(top[1])} (${(top[1]/tDesp*100).toFixed(1)}% das despesas totais). Analise possibilidades de otimização.`});
+  const reserva = tDesp / meses.length * 3;
+  itens.push({tipo:'info',icon:'💰',titulo:'Reserva de Emergência Recomendada',msg:`Mantenha ${fmt(reserva)} em caixa (3 meses de despesas). Protege contra imprevistos operacionais.`});
+  if (tRec > 0) itens.push({tipo:'ok',icon:'💡',titulo:'Oportunidade: Economia de 10%',msg:`Reduzindo despesas em 10%, você economiza ${fmt(tDesp*0.1)} ao ano — impacto direto no EBITDA.`});
+  itens.push({tipo:'ok',icon:'🎯',titulo:'Plano de Ação',lista:['Suba os dados todo mês para análise consistente','Monitore o EBITDA mensalmente — meta: 25%','Salve o backup JSON após cada mês processado','Revise despesas por categoria a cada trimestre','Busque aumentar receita sem elevar despesas na mesma proporção']});
+  let html = '';
+  itens.forEach(it => {
+    const c = it.tipo==='ok'?'ok':it.tipo==='err'?'err':it.tipo==='warn'?'warn':'info';
+    html += `<div class="al al-${c}"><strong>${it.icon} ${it.titulo}</strong>`;
+    if (it.msg) html += `<p style="margin-top:6px">${it.msg}</p>`;
+    if (it.lista) html += '<ul style="margin-top:8px;margin-left:20px;line-height:1.9">'+it.lista.map(x=>`<li>${x}</li>`).join('')+'</ul>';
+    html += '</div>';
+  });
+  document.getElementById('recContent').innerHTML = html;
+}
+
+function tab(nome, el) {
+  document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(nome).classList.add('active');
   el.classList.add('active');
 }
 
 function extrairMes(nome) {
-  const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const m = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const c = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const n = nome.toLowerCase();
-  for (const m of meses) { if (n.includes(m)) return m.charAt(0).toUpperCase() + m.slice(1); }
-  return 'Arquivo';
+  for (let i = 0; i < m.length; i++) if (n.includes(m[i])) return c[i];
+  return 'Mês ' + (Object.keys(db).length + 1);
 }
 
 function fmt(v) {
-  return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (isNaN(v)||v===null||v===undefined) return 'R$ 0,00';
+  return 'R$ ' + (+v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
-
-function limparDados() {
-  if (confirm('Tem certeza que deseja limpar TODOS os dados?')) {
-    localStorage.removeItem('campaxMeses');
-    dadosMeses = {};
-    document.getElementById('results').style.display = 'none';
-    document.getElementById('fileInput').value = '';
-    alert('Dados limpos com sucesso!');
-  }
-}
-
-function exportarDados() {
-  const txt = JSON.stringify(dadosMeses, null, 2);
-  const blob = new Blob([txt], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'campax_dados_' + new Date().toISOString().split('T')[0] + '.json';
-  a.click();
-}
-
-// Carregar dados ao abrir
-window.addEventListener('load', () => {
-  if (Object.keys(dadosMeses).length > 0) {
-    renderizar();
-  }
-});
 </script>
-
 </body>
 </html>
