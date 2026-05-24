@@ -8,501 +8,402 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh;padding:20px;color:#222}
+body{font-family:"Segoe UI",sans-serif;background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh;padding:20px;color:#222}
 .wrap{max-width:1500px;margin:0 auto}
 header{background:#fff;padding:24px 28px;border-radius:12px;margin-bottom:20px;display:flex;align-items:center;gap:18px;box-shadow:0 4px 20px rgba(0,0,0,.15)}
 header h1{font-size:26px;color:#1e3c72;margin-bottom:4px}
 header p{color:#666;font-size:13px}
-.painel-upload{background:#fff;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,.15)}
-.painel-upload h2{font-size:15px;color:#1e3c72;margin-bottom:16px;border-bottom:2px solid #eee;padding-bottom:10px}
-.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.upload-box{border:2px dashed #2a5298;border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:.3s;position:relative}
-.upload-box:hover,.upload-box.dragover{background:#eef4ff}
+.painel{background:#fff;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.painel h2{font-size:15px;color:#1e3c72;margin-bottom:16px;border-bottom:2px solid #eee;padding-bottom:10px}
+.upload-box{border:2px dashed #2a5298;border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:.3s}
+.upload-box:hover,.upload-box.over{background:#eef4ff}
 .upload-box input{display:none}
-.upload-box .icon{font-size:36px;margin-bottom:8px}
-.upload-box h3{font-size:14px;color:#1e3c72;margin-bottom:6px}
-.upload-box p{font-size:12px;color:#999}
-.upload-box .status{margin-top:10px;font-size:12px;font-weight:600;color:#27ae60}
+.ico{font-size:40px;margin-bottom:10px}
+.status{margin-top:10px;font-size:12px;font-weight:600;color:#27ae60;min-height:18px}
 .btn{padding:10px 22px;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;transition:.3s;margin:4px}
-.btn-primary{background:linear-gradient(135deg,#2a5298,#1e3c72);color:#fff}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(42,82,152,.4)}
-.btn-success{background:#27ae60;color:#fff}
-.btn-danger{background:#e74c3c;color:#fff}
-.btn-sm{padding:7px 14px;font-size:11px}
-.acoes{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid #eee}
-.meses-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-.mes-tag{background:#eef4ff;border:1px solid #2a5298;color:#2a5298;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
-.mes-tag button{background:none;border:none;cursor:pointer;color:#e74c3c;font-size:14px;line-height:1;padding:0}
-.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
-.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:16px;margin-bottom:16px}
+.bp{background:linear-gradient(135deg,#2a5298,#1e3c72);color:#fff}
+.bp:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(42,82,152,.4)}
+.bs{background:#27ae60;color:#fff}
+.bd{background:#e74c3c;color:#fff}
+.bsm{padding:7px 14px;font-size:11px}
+.acoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid #eee}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.tag{background:#eef4ff;border:1px solid #2a5298;color:#2a5298;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:16px;margin-bottom:16px}
 .card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);border-top:4px solid #2a5298}
 .card h3{font-size:11px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
 .kpi{font-size:30px;font-weight:700;color:#1e3c72;margin:6px 0}
-.kpi.g{color:#27ae60}.kpi.r{color:#e74c3c}.kpi.b{color:#2980b9}.kpi.o{color:#f39c12}
+.g{color:#27ae60}.r{color:#e74c3c}.b{color:#2980b9}
 .sub{font-size:11px;color:#aaa;margin-top:4px}
 .tabs{display:flex;background:#fff;border-radius:10px 10px 0 0;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.1)}
-.tab-btn{flex:1;padding:14px 8px;background:#f0f4f8;border:none;cursor:pointer;font-weight:600;font-size:12px;color:#666;transition:.3s}
-.tab-btn.active{background:#2a5298;color:#fff}
-.tab-pane{display:none;background:#fff;padding:24px;border-radius:0 0 10px 10px;box-shadow:0 4px 10px rgba(0,0,0,.1);margin-bottom:20px}
-.tab-pane.active{display:block}
+.tb{flex:1;padding:14px 6px;background:#f0f4f8;border:none;cursor:pointer;font-weight:600;font-size:12px;color:#666;transition:.3s}
+.tb.on{background:#2a5298;color:#fff}
+.pane{display:none;background:#fff;padding:24px;border-radius:0 0 10px 10px;box-shadow:0 4px 10px rgba(0,0,0,.1);margin-bottom:20px}
+.pane.on{display:block}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th{background:#2a5298;color:#fff;padding:10px;text-align:left;font-weight:600}
 td{padding:9px 10px;border-bottom:1px solid #eee}
 tr:hover td{background:#fafafa}
-.tr-tot td{background:#eaf4fb;font-weight:700;border-top:2px solid #2a5298}
-.tr-rec td{background:#f0fff4}
-.chart-box{position:relative;height:280px;margin:14px 0}
+.tr-t td{background:#eaf4fb;font-weight:700;border-top:2px solid #2a5298}
+.tr-r td{background:#f0fff4}
+.cb{position:relative;height:280px;margin:14px 0}
 .al{padding:13px 15px;border-radius:6px;margin-bottom:12px;font-size:13px;border-left:4px solid;line-height:1.6}
 .al-ok{background:#d5f4e6;border-color:#27ae60;color:#145a32}
-.al-warn{background:#fef5e7;border-color:#f39c12;color:#6d4c1f}
-.al-err{background:#fadbd8;border-color:#e74c3c;color:#78281f}
-.al-info{background:#d6eaf8;border-color:#2980b9;color:#1a5276}
+.al-w{background:#fef5e7;border-color:#f39c12;color:#6d4c1f}
+.al-e{background:#fadbd8;border-color:#e74c3c;color:#78281f}
+.al-i{background:#d6eaf8;border-color:#2980b9;color:#1a5276}
 .bk{display:inline-block;padding:3px 9px;border-radius:4px;font-size:11px;font-weight:600}
 .bk-ok{background:#d5f4e6;color:#145a32}
-.bk-warn{background:#fef5e7;color:#6d4c1f}
-.bk-err{background:#fadbd8;color:#78281f}
-.loading{display:none;text-align:center;padding:30px;background:#fff;border-radius:12px;margin-bottom:20px}
-.spinner{border:4px solid #f3f3f3;border-top:4px solid #2a5298;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:0 auto 12px}
-@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-@media(max-width:768px){.upload-grid,.grid-2,.grid-4{grid-template-columns:1fr}.tabs{flex-direction:column}.kpi{font-size:22px}}
+.bk-w{background:#fef5e7;color:#6d4c1f}
+.spin-wrap{display:none;text-align:center;padding:30px;background:#fff;border-radius:12px;margin-bottom:20px}
+.spin{border:4px solid #f3f3f3;border-top:4px solid #2a5298;border-radius:50%;width:40px;height:40px;animation:sp 1s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.sync{font-size:11px;color:#aaa;margin-top:8px}
+@media(max-width:768px){.grid2,.grid4{grid-template-columns:1fr}.tabs{flex-direction:column}.kpi{font-size:22px}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <header>
-  <div style="font-size:44px">📊</div>
+  <div style="font-size:44px">&#128202;</div>
   <div>
-    <h1>Dashboard Executivo — Campax</h1>
-    <p>DRE Consolidado · EBITDA · Projeções · Recomendações · Histórico Mensal</p>
+    <h1>Dashboard Executivo &#8212; Campax</h1>
+    <p>DRE Consolidado &#183; EBITDA &#183; Projecoes &#183; Recomendacoes &#183; Dados salvos no Google Sheets</p>
   </div>
 </header>
 
-<!-- PAINEL DE UPLOAD -->
-<div class="painel-upload">
-  <h2>📁 Carregar Dados</h2>
-  <div class="upload-grid">
-
-    <!-- Excel -->
-    <div class="upload-box" id="dzExcel">
-      <input type="file" id="inExcel" accept=".xlsx,.xls">
-      <div class="icon">📊</div>
-      <h3>1. Arquivo Excel do Mês</h3>
-      <p>Arraste ou clique para selecionar o Excel mensal</p>
-      <p style="margin-top:6px;font-size:11px;color:#aaa">Colunas: Data | Código | Descrição | Entrada | Saída</p>
-      <div class="status" id="statusExcel">Nenhum arquivo selecionado</div>
-    </div>
-
-    <!-- JSON backup -->
-    <div class="upload-box" id="dzJson">
-      <input type="file" id="inJson" accept=".json">
-      <div class="icon">💾</div>
-      <h3>2. Backup Anterior (opcional)</h3>
-      <p>No primeiro mês, pule esta etapa.<br>Nos próximos meses, carregue o backup salvo.</p>
-      <div class="status" id="statusJson">Nenhum backup carregado</div>
-    </div>
-
+<div class="painel">
+  <h2>&#128193; Carregar Novo Mes</h2>
+  <div class="upload-box" id="dz">
+    <input type="file" id="inp" accept=".xlsx,.xls">
+    <div class="ico">&#128202;</div>
+    <h3>Arraste o Excel do mes aqui</h3>
+    <p>ou clique para selecionar</p>
+    <div class="status" id="st">Nenhum arquivo selecionado</div>
   </div>
-
   <div class="acoes">
-    <button class="btn btn-primary" onclick="processar()">▶ Processar e Consolidar</button>
-    <button class="btn btn-success btn-sm" onclick="salvarBackup()">💾 Salvar Backup (JSON)</button>
-    <button class="btn btn-danger btn-sm" onclick="limparMes()">🗑️ Remover Mês Selecionado</button>
+    <button class="btn bp" onclick="processar()">&#9654; Processar e Salvar no Google Sheets</button>
+    <button class="btn bs bsm" onclick="carregarTodos()">&#128260; Atualizar Dashboard</button>
+    <button class="btn bd bsm" onclick="removerMesPrompt()">&#128465; Remover Mes</button>
   </div>
-
-  <div class="meses-tags" id="mesesTags"></div>
+  <div class="tags" id="tags"></div>
+  <div class="sync" id="syncInfo"></div>
 </div>
 
-<div id="loading" class="loading">
-  <div class="spinner"></div>
-  <p>Processando dados...</p>
+<div class="spin-wrap" id="spw"><div class="spin"></div><p id="spMsg">Processando...</p></div>
+
+<div id="dash" style="display:none">
+<div class="grid4">
+  <div class="card"><h3>Receita Total (Ano)</h3><div class="kpi g" id="kR">R$ 0</div><div class="sub" id="kRS">0 meses</div></div>
+  <div class="card"><h3>Despesa Total (Ano)</h3><div class="kpi r" id="kD">R$ 0</div><div class="sub" id="kDS">-</div></div>
+  <div class="card"><h3>Resultado Liquido</h3><div class="kpi" id="kRe">R$ 0</div><div class="sub" id="kReS">Margem: 0%</div></div>
+  <div class="card"><h3>EBITDA (Meta 25%)</h3><div class="kpi b" id="kE">R$ 0</div><div class="sub" id="kES">-</div></div>
 </div>
-
-<div id="results" style="display:none">
-
-<!-- KPIs -->
-<div class="grid-4">
-  <div class="card">
-    <h3>Receita Total (Ano)</h3>
-    <div class="kpi g" id="kRec">R$ 0</div>
-    <div class="sub" id="kRecSub">0 meses</div>
-  </div>
-  <div class="card">
-    <h3>Despesa Total (Ano)</h3>
-    <div class="kpi r" id="kDesp">R$ 0</div>
-    <div class="sub" id="kDespSub">—</div>
-  </div>
-  <div class="card">
-    <h3>Resultado Líquido</h3>
-    <div class="kpi" id="kRes">R$ 0</div>
-    <div class="sub" id="kResSub">Margem: 0%</div>
-  </div>
-  <div class="card">
-    <h3>EBITDA (Meta 25%)</h3>
-    <div class="kpi b" id="kEbitda">R$ 0</div>
-    <div class="sub" id="kEbitdaSub">—</div>
-  </div>
-</div>
-
-<!-- TABS -->
 <div class="tabs">
-  <button class="tab-btn active" onclick="tab('dre',this)">📈 DRE</button>
-  <button class="tab-btn" onclick="tab('mensal',this)">📅 Mensal</button>
-  <button class="tab-btn" onclick="tab('graficos',this)">📊 Gráficos</button>
-  <button class="tab-btn" onclick="tab('projecao',this)">🔮 Projeção</button>
-  <button class="tab-btn" onclick="tab('rec',this)">💡 Recomendações</button>
+  <button class="tb on" onclick="tab2(this,'dre')">&#128200; DRE</button>
+  <button class="tb" onclick="tab2(this,'men')">&#128197; Mensal</button>
+  <button class="tb" onclick="tab2(this,'grf')">&#128202; Graficos</button>
+  <button class="tb" onclick="tab2(this,'prj')">&#128302; Projecao</button>
+  <button class="tb" onclick="tab2(this,'rec')">&#128161; Recomendacoes</button>
 </div>
-
-<div id="dre" class="tab-pane active">
-  <h3 style="margin-bottom:16px">DRE — Demonstração de Resultado do Exercício 2026</h3>
-  <table><thead><tr><th>Descrição</th><th style="text-align:right">Valor</th><th style="text-align:right">% Receita</th><th>Status</th></tr></thead>
-  <tbody id="tbDRE"></tbody></table>
+<div id="dre" class="pane on">
+  <h3 style="margin-bottom:16px">DRE 2026</h3>
+  <table><thead><tr><th>Descricao</th><th style="text-align:right">Valor</th><th style="text-align:right">% Receita</th><th>Status</th></tr></thead><tbody id="tbDRE"></tbody></table>
 </div>
-
-<div id="mensal" class="tab-pane">
+<div id="men" class="pane">
   <h3 style="margin-bottom:16px">Comparativo Mensal</h3>
-  <table><thead><tr><th>Mês</th><th style="text-align:right">Receita</th><th style="text-align:right">Despesa</th><th style="text-align:right">Resultado</th><th style="text-align:right">Margem</th><th style="text-align:right">Meta EBITDA</th><th>Status</th></tr></thead>
-  <tbody id="tbMensal"></tbody></table>
+  <table><thead><tr><th>Mes</th><th style="text-align:right">Receita</th><th style="text-align:right">Despesa</th><th style="text-align:right">Resultado</th><th style="text-align:right">Margem</th><th style="text-align:right">Meta EBITDA</th><th>Status</th></tr></thead><tbody id="tbMen"></tbody></table>
 </div>
-
-<div id="graficos" class="tab-pane">
-  <div class="grid-2">
-    <div><h4>Receita vs Despesa</h4><div class="chart-box"><canvas id="cTend"></canvas></div></div>
-    <div><h4>Resultado Mensal</h4><div class="chart-box"><canvas id="cRes"></canvas></div></div>
-    <div><h4>Margem vs Meta 25%</h4><div class="chart-box"><canvas id="cMarg"></canvas></div></div>
-    <div><h4>Composição Despesas</h4><div class="chart-box"><canvas id="cDesp"></canvas></div></div>
+<div id="grf" class="pane">
+  <div class="grid2">
+    <div><h4>Receita vs Despesa</h4><div class="cb"><canvas id="cT"></canvas></div></div>
+    <div><h4>Resultado Mensal</h4><div class="cb"><canvas id="cR"></canvas></div></div>
+    <div><h4>Margem vs Meta 25%</h4><div class="cb"><canvas id="cM"></canvas></div></div>
+    <div><h4>Composicao Despesas</h4><div class="cb"><canvas id="cD"></canvas></div></div>
   </div>
 </div>
-
-<div id="projecao" class="tab-pane">
-  <h3 style="margin-bottom:16px">Projeção — Próximos 6 Meses</h3>
-  <div id="projInfo"></div>
-  <div class="chart-box" style="height:300px"><canvas id="cProj"></canvas></div>
-  <div id="projTabela" style="margin-top:20px"></div>
+<div id="prj" class="pane">
+  <h3 style="margin-bottom:16px">Projecao - Proximos 6 Meses</h3>
+  <div id="pInfo"></div>
+  <div class="cb" style="height:300px"><canvas id="cP"></canvas></div>
+  <div id="pTab" style="margin-top:20px"></div>
 </div>
-
-<div id="rec" class="tab-pane">
-  <h3 style="margin-bottom:16px">Recomendações Inteligentes</h3>
-  <div id="recContent"></div>
+<div id="rec" class="pane">
+  <h3 style="margin-bottom:16px">Recomendacoes Inteligentes</h3>
+  <div id="rContent"></div>
 </div>
-
-</div><!-- /results -->
-</div><!-- /wrap -->
+</div>
+</div>
 
 <script>
-const CATS = {'1':'Despesas Fixas','37':'Funcionários','38':'Func. Extra','39':'Fretes','41':'Matéria Prima','43':'Taxas Bancárias','44':'Impostos','80':'Diversos'};
-const ORDEM = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const META = 0.25;
+var API = "https://script.google.com/macros/s/AKfycby2SS1AkY4t4WNrXLEygD5-Hm6Iwd7pnxYeHwQ221LBWx2gubtqMLjObxJwa7bbPxhwGA/exec";
+var CATS = {"1":"Despesas Fixas","37":"Funcionarios","38":"Func. Extra","39":"Fretes","41":"Materia Prima","43":"Taxas Bancarias","44":"Impostos","80":"Diversos"};
+var ORDEM = ["Janeiro","Fevereiro","Marco","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+var META = 0.25;
+var db = {};
+var ch = {};
+var arqPend = null, mesPend = null;
 
-let db = {};
-let charts = {};
-let excelPendente = null;
-let mesPendente = null;
+var dz = document.getElementById("dz");
+var inp = document.getElementById("inp");
+dz.addEventListener("click", function(){ inp.click(); });
+dz.addEventListener("dragover", function(e){ e.preventDefault(); dz.classList.add("over"); });
+dz.addEventListener("dragleave", function(){ dz.classList.remove("over"); });
+dz.addEventListener("drop", function(e){ e.preventDefault(); dz.classList.remove("over"); selecionarArq(e.dataTransfer.files[0]); });
+inp.addEventListener("change", function(e){ selecionarArq(e.target.files[0]); });
 
-// DRAG AND DROP EXCEL
-const dzEx = document.getElementById('dzExcel');
-const inEx = document.getElementById('inExcel');
-dzEx.addEventListener('click', () => inEx.click());
-dzEx.addEventListener('dragover', e => { e.preventDefault(); dzEx.classList.add('dragover'); });
-dzEx.addEventListener('dragleave', () => dzEx.classList.remove('dragover'));
-dzEx.addEventListener('drop', e => { e.preventDefault(); dzEx.classList.remove('dragover'); carregarExcel(e.dataTransfer.files[0]); });
-inEx.addEventListener('change', e => carregarExcel(e.target.files[0]));
-
-// DRAG AND DROP JSON
-const dzJs = document.getElementById('dzJson');
-const inJs = document.getElementById('inJson');
-dzJs.addEventListener('click', () => inJs.click());
-dzJs.addEventListener('dragover', e => { e.preventDefault(); dzJs.classList.add('dragover'); });
-dzJs.addEventListener('dragleave', () => dzJs.classList.remove('dragover'));
-dzJs.addEventListener('drop', e => { e.preventDefault(); dzJs.classList.remove('dragover'); carregarJson(e.dataTransfer.files[0]); });
-inJs.addEventListener('change', e => carregarJson(e.target.files[0]));
-
-function carregarExcel(file) {
+function selecionarArq(file) {
   if (!file) return;
-  excelPendente = file;
-  mesPendente = extrairMes(file.name);
-  document.getElementById('statusExcel').textContent = '✅ ' + file.name + ' (' + mesPendente + ')';
+  arqPend = file;
+  mesPend = extrairMes(file.name);
+  document.getElementById("st").textContent = "Selecionado: " + file.name + " -> " + mesPend;
 }
 
-function carregarJson(file) {
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const dados = JSON.parse(e.target.result);
-      db = dados;
-      document.getElementById('statusJson').textContent = '✅ Backup carregado: ' + Object.keys(db).join(', ');
-      atualizarTags();
-      if (Object.keys(db).length > 0) renderTudo();
-    } catch {
-      alert('Arquivo JSON inválido!');
-    }
-  };
-  reader.readAsText(file);
+function spin(show, msg) {
+  document.getElementById("spw").style.display = show ? "block" : "none";
+  if (msg) document.getElementById("spMsg").textContent = msg;
 }
 
 function processar() {
-  if (!excelPendente) { alert('Selecione um arquivo Excel primeiro!'); return; }
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('results').style.display = 'none';
-  const reader = new FileReader();
-  reader.onload = e => {
+  if (!arqPend) { alert("Selecione um arquivo Excel primeiro!"); return; }
+  spin(true, "Lendo arquivo Excel...");
+  var reader = new FileReader();
+  reader.onload = function(e) {
     try {
-      const wb = XLSX.read(e.target.result, { type: 'array' });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
-      db[mesPendente] = analisar(rows);
-      excelPendente = null;
-      document.getElementById('statusExcel').textContent = 'Nenhum arquivo selecionado';
-      document.getElementById('inExcel').value = '';
-      atualizarTags();
-      renderTudo();
+      var wb = XLSX.read(e.target.result, { type: "array" });
+      var ws = wb.Sheets[wb.SheetNames[0]];
+      var rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      var dados = analisar(rows);
+      dados.mes = mesPend;
+      spin(true, "Salvando no Google Sheets...");
+      enviarSheets(dados);
     } catch(err) {
-      alert('Erro: ' + err.message);
+      spin(false);
+      alert("Erro ao ler Excel: " + err.message);
     }
-    document.getElementById('loading').style.display = 'none';
   };
-  reader.readAsArrayBuffer(excelPendente);
+  reader.readAsArrayBuffer(arqPend);
 }
 
 function analisar(rows) {
-  const rec = [], desp = [];
-  for (let i = 5; i < rows.length; i++) {
-    const r = rows[i];
+  var rec = [], desp = [];
+  for (var i = 5; i < rows.length; i++) {
+    var r = rows[i];
     if (!r || r.length < 3) continue;
-    const cod = String(r[1] || '').trim();
-    const desc = String(r[2] || '').trim();
-    const ent = parseFloat(r[3]) || 0;
-    const sai = parseFloat(r[4]) || 0;
+    var cod = String(r[1] || "").trim();
+    var desc = String(r[2] || "").trim();
+    var ent = parseFloat(r[3]) || 0;
+    var sai = parseFloat(r[4]) || 0;
     if (!cod && !desc) continue;
-    if (cod === 'REC' && ent > 0) rec.push({ desc, valor: ent });
-    else if (cod && cod !== 'REC' && sai > 0) desp.push({ cod, desc, valor: sai, cat: CATS[cod] || 'Diversos' });
+    if (cod === "REC" && ent > 0) rec.push({ desc: desc, valor: ent });
+    else if (cod && cod !== "REC" && sai > 0) desp.push({ cod: cod, desc: desc, valor: sai, cat: CATS[cod] || "Diversos" });
   }
-  const tRec = rec.reduce((s, x) => s + x.valor, 0);
-  const tDesp = desp.reduce((s, x) => s + x.valor, 0);
-  const res = tRec - tDesp;
-  return { rec, desp, tRec, tDesp, res, margem: tRec > 0 ? (res / tRec) * 100 : 0 };
+  var tR = rec.reduce(function(s,x){ return s + x.valor; }, 0);
+  var tD = desp.reduce(function(s,x){ return s + x.valor; }, 0);
+  var res = tR - tD;
+  return { rec: rec, desp: desp, totalRec: tR, totalDesp: tD, resultado: res, margem: tR > 0 ? (res/tR)*100 : 0 };
 }
 
-function mesesOrdenados() {
-  return Object.keys(db).sort((a, b) => ORDEM.indexOf(a) - ORDEM.indexOf(b));
+function enviarSheets(dados) {
+  fetch(API, { method: "POST", body: JSON.stringify(dados) })
+  .then(function(r){ return r.json(); })
+  .then(function(r) {
+    spin(false);
+    if (r.ok) {
+      arqPend = null; mesPend = null;
+      document.getElementById("st").textContent = "Salvo com sucesso!";
+      inp.value = "";
+      carregarTodos();
+    } else { alert("Erro ao salvar: " + r.erro); }
+  })
+  .catch(function(){ spin(false); alert("Erro de conexao com Google Sheets."); });
+}
+
+function carregarTodos() {
+  spin(true, "Carregando dados do Google Sheets...");
+  fetch(API)
+  .then(function(r){ return r.json(); })
+  .then(function(r) {
+    spin(false);
+    if (r.ok && r.dados && r.dados.length > 0) {
+      db = {};
+      r.dados.forEach(function(d){ db[d.mes] = d; });
+      atualizarTags();
+      renderTudo();
+      document.getElementById("syncInfo").textContent = "Ultima sincronizacao: " + new Date().toLocaleString("pt-BR");
+    } else {
+      document.getElementById("dash").style.display = "none";
+      document.getElementById("syncInfo").textContent = "Nenhum dado ainda. Suba seu primeiro Excel!";
+    }
+  })
+  .catch(function(){ spin(false); document.getElementById("syncInfo").textContent = "Erro ao conectar com Google Sheets."; });
 }
 
 function atualizarTags() {
-  const meses = mesesOrdenados();
-  document.getElementById('mesesTags').innerHTML = meses.map(m =>
-    `<span class="mes-tag">✅ ${m} <button onclick="removerMes('${m}')" title="Remover">×</button></span>`
-  ).join('');
+  var meses = mOrd();
+  document.getElementById("tags").innerHTML = meses.map(function(m){ return "<span class='tag'>&#9989; " + m + "</span>"; }).join(" ");
 }
 
-function removerMes(mes) {
-  if (!confirm('Remover ' + mes + ' dos dados?')) return;
-  delete db[mes];
-  atualizarTags();
-  if (Object.keys(db).length === 0) { document.getElementById('results').style.display = 'none'; return; }
-  renderTudo();
+function removerMesPrompt() {
+  var meses = mOrd();
+  if (!meses.length) { alert("Nenhum mes carregado."); return; }
+  var mes = prompt("Digite o mes para remover:
+" + meses.join(", "));
+  if (mes && db[mes]) {
+    if (!confirm("Remover " + mes + " do Google Sheets?")) return;
+    spin(true, "Removendo " + mes + "...");
+    fetch(API + "?acao=deletar&mes=" + encodeURIComponent(mes))
+    .then(function(r){ return r.json(); })
+    .then(function(){ spin(false); carregarTodos(); })
+    .catch(function(){ spin(false); alert("Erro ao remover."); });
+  } else if (mes) { alert("Mes nao encontrado."); }
 }
 
-function limparMes() {
-  const meses = mesesOrdenados();
-  if (meses.length === 0) { alert('Nenhum mês carregado.'); return; }
-  const mes = prompt('Digite o nome do mês para remover:\n' + meses.join(', '));
-  if (mes && db[mes]) removerMes(mes);
-  else if (mes) alert('Mês não encontrado.');
-}
-
-function salvarBackup() {
-  if (Object.keys(db).length === 0) { alert('Nenhum dado para salvar!'); return; }
-  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'campax_backup_' + new Date().toISOString().split('T')[0] + '.json';
-  a.click();
+function mOrd() {
+  return Object.keys(db).sort(function(a,b){ return ORDEM.indexOf(a) - ORDEM.indexOf(b); });
 }
 
 function renderTudo() {
-  const meses = mesesOrdenados();
-  const tRec = meses.reduce((s, m) => s + db[m].tRec, 0);
-  const tDesp = meses.reduce((s, m) => s + db[m].tDesp, 0);
-  const res = tRec - tDesp;
-  const margem = tRec > 0 ? (res / tRec) * 100 : 0;
-  const ebitda = tRec * META;
+  var meses = mOrd();
+  var tR = meses.reduce(function(s,m){ return s + (+db[m].totalRec||0); }, 0);
+  var tD = meses.reduce(function(s,m){ return s + (+db[m].totalDesp||0); }, 0);
+  var res = tR - tD;
+  var marg = tR > 0 ? (res/tR)*100 : 0;
+  var ebitda = tR * META;
 
-  // KPIs
-  document.getElementById('kRec').textContent = fmt(tRec);
-  document.getElementById('kRecSub').textContent = meses.length + ' meses carregados';
-  document.getElementById('kDesp').textContent = fmt(tDesp);
-  document.getElementById('kDespSub').textContent = (tRec > 0 ? (tDesp/tRec*100).toFixed(1) : 0) + '% da receita';
-  const kR = document.getElementById('kRes');
-  kR.textContent = fmt(res);
-  kR.className = 'kpi ' + (res >= 0 ? 'g' : 'r');
-  document.getElementById('kResSub').textContent = 'Margem: ' + margem.toFixed(1) + '%';
-  document.getElementById('kEbitda').textContent = fmt(ebitda);
-  document.getElementById('kEbitdaSub').innerHTML = res >= ebitda
-    ? '<span class="bk bk-ok">✅ Acima da meta</span>'
-    : '<span class="bk bk-warn">⚠️ Abaixo da meta</span>';
+  document.getElementById("kR").textContent = fmt(tR);
+  document.getElementById("kRS").textContent = meses.length + " meses carregados";
+  document.getElementById("kD").textContent = fmt(tD);
+  document.getElementById("kDS").textContent = (tR>0?(tD/tR*100).toFixed(1):0) + "% da receita";
+  var kRe = document.getElementById("kRe");
+  kRe.textContent = fmt(res);
+  kRe.className = "kpi " + (res >= 0 ? "g" : "r");
+  document.getElementById("kReS").textContent = "Margem: " + marg.toFixed(1) + "%";
+  document.getElementById("kE").textContent = fmt(ebitda);
+  document.getElementById("kES").innerHTML = res >= ebitda ? "<span class='bk bk-ok'>&#9989; Acima da meta</span>" : "<span class='bk bk-w'>&#9888;&#65039; Abaixo da meta</span>";
 
-  renderDRE(meses, tRec, tDesp, res, ebitda);
-  renderMensal(meses, tRec, tDesp, res);
+  renderDRE(meses, tR, tD, res, ebitda);
+  renderMensal(meses, tR, tD, res);
   renderGraficos(meses);
-  renderProjecao(meses);
-  renderRec(tRec, tDesp, res, margem, ebitda, meses);
+  renderProj(meses);
+  renderRec(tR, tD, res, marg, ebitda, meses);
 
-  document.getElementById('results').style.display = 'block';
+  document.getElementById("dash").style.display = "block";
 }
 
-function renderDRE(meses, tRec, tDesp, res, ebitda) {
-  const cats = {};
-  meses.forEach(m => db[m].desp.forEach(d => { cats[d.cat] = (cats[d.cat] || 0) + d.valor; }));
-  const p = v => tRec > 0 ? (v/tRec*100).toFixed(1) + '%' : '0%';
-  let h = `<tr class="tr-rec"><td><strong>(+) Receita Bruta</strong></td><td style="text-align:right"><strong>${fmt(tRec)}</strong></td><td style="text-align:right">100%</td><td><span class="bk bk-ok">Base</span></td></tr>`;
-  Object.entries(cats).sort((a,b) => b[1]-a[1]).forEach(([cat, val]) => {
-    h += `<tr><td>&nbsp;&nbsp;&nbsp;(-) ${cat}</td><td style="text-align:right">${fmt(val)}</td><td style="text-align:right">${p(val)}</td><td></td></tr>`;
+function renderDRE(meses, tR, tD, res, ebitda) {
+  var cats = {};
+  meses.forEach(function(m) {
+    (db[m].desp || []).forEach(function(d){ var c = d.cat||"Diversos"; cats[c] = (cats[c]||0) + (+d.valor||0); });
   });
-  h += `
-    <tr class="tr-tot"><td><strong>(-) Total Despesas</strong></td><td style="text-align:right"><strong>${fmt(tDesp)}</strong></td><td style="text-align:right"><strong>${p(tDesp)}</strong></td><td><span class="bk ${tDesp/tRec < 0.75 ? 'bk-ok':'bk-warn'}">${p(tDesp)} dos custos</span></td></tr>
-    <tr class="tr-tot"><td><strong>(=) EBITDA — Meta 25%</strong></td><td style="text-align:right"><strong>${fmt(ebitda)}</strong></td><td style="text-align:right"><strong>25,0%</strong></td><td><span class="bk bk-ok">Meta</span></td></tr>
-    <tr class="tr-tot"><td><strong>(=) Resultado Líquido</strong></td><td style="text-align:right"><strong>${fmt(res)}</strong></td><td style="text-align:right"><strong>${p(res)}</strong></td><td><span class="bk ${res >= ebitda ? 'bk-ok':'bk-warn'}">${res >= ebitda ? '✅ Meta atingida':'⚠️ Abaixo da meta'}</span></td></tr>
-  `;
-  document.getElementById('tbDRE').innerHTML = h;
+  var p = function(v){ return tR > 0 ? (v/tR*100).toFixed(1)+"%" : "0%"; };
+  var h = "<tr class='tr-r'><td><strong>(+) Receita Bruta</strong></td><td style='text-align:right'><strong>" + fmt(tR) + "</strong></td><td style='text-align:right'>100%</td><td><span class='bk bk-ok'>Base</span></td></tr>";
+  var cats2 = Object.entries(cats).sort(function(a,b){ return b[1]-a[1]; });
+  cats2.forEach(function(e){ h += "<tr><td>&nbsp;&nbsp;&nbsp;(-) " + e[0] + "</td><td style='text-align:right'>" + fmt(e[1]) + "</td><td style='text-align:right'>" + p(e[1]) + "</td><td></td></tr>"; });
+  h += "<tr class='tr-t'><td><strong>(-) Total Despesas</strong></td><td style='text-align:right'><strong>" + fmt(tD) + "</strong></td><td style='text-align:right'><strong>" + p(tD) + "</strong></td><td><span class='bk " + (tD/tR<0.75?"bk-ok":"bk-w") + "'>" + p(tD) + " custos</span></td></tr>";
+  h += "<tr class='tr-t'><td><strong>(=) EBITDA Meta 25%</strong></td><td style='text-align:right'><strong>" + fmt(ebitda) + "</strong></td><td style='text-align:right'><strong>25,0%</strong></td><td><span class='bk bk-ok'>Meta</span></td></tr>";
+  h += "<tr class='tr-t'><td><strong>(=) Resultado Liquido</strong></td><td style='text-align:right'><strong>" + fmt(res) + "</strong></td><td style='text-align:right'><strong>" + p(res) + "</strong></td><td><span class='bk " + (res>=ebitda?"bk-ok":"bk-w") + "'>" + (res>=ebitda?"Meta atingida":"Abaixo da meta") + "</span></td></tr>";
+  document.getElementById("tbDRE").innerHTML = h;
 }
 
-function renderMensal(meses, tRecTotal, tDespTotal, resTotal) {
-  let h = '';
-  meses.forEach((mes, i) => {
-    const m = db[mes];
-    const ant = i > 0 ? db[meses[i-1]] : null;
-    const tend = ant ? (m.tRec > ant.tRec ? '↗️' : m.tRec < ant.tRec ? '↘️' : '→') : '—';
-    const meta = m.tRec * META;
-    h += `<tr>
-      <td><strong>${mes}</strong> ${tend}</td>
-      <td style="text-align:right">${fmt(m.tRec)}</td>
-      <td style="text-align:right">${fmt(m.tDesp)}</td>
-      <td style="text-align:right;color:${m.res>=0?'#27ae60':'#e74c3c'}"><strong>${fmt(m.res)}</strong></td>
-      <td style="text-align:right">${m.margem.toFixed(1)}%</td>
-      <td style="text-align:right">${fmt(meta)}</td>
-      <td><span class="bk ${m.res>=meta?'bk-ok':'bk-warn'}">${m.res>=meta?'✅':'⚠️'}</span></td>
-    </tr>`;
+function renderMensal(meses, tRt, tDt, rT) {
+  var h = "";
+  meses.forEach(function(mes, i) {
+    var m = db[mes];
+    var tR = +m.totalRec||0, tD = +m.totalDesp||0, res = +m.resultado||0, marg = +m.margem||0;
+    var ant = i > 0 ? db[meses[i-1]] : null;
+    var tend = ant ? (+m.totalRec > +ant.totalRec ? "+" : +m.totalRec < +ant.totalRec ? "-" : "=") : "-";
+    var meta = tR * META;
+    h += "<tr><td><strong>" + mes + "</strong> " + tend + "</td><td style='text-align:right'>" + fmt(tR) + "</td><td style='text-align:right'>" + fmt(tD) + "</td><td style='text-align:right;color:" + (res>=0?"#27ae60":"#e74c3c") + "'><strong>" + fmt(res) + "</strong></td><td style='text-align:right'>" + marg.toFixed(1) + "%</td><td style='text-align:right'>" + fmt(meta) + "</td><td><span class='bk " + (res>=meta?"bk-ok":"bk-w") + "'>" + (res>=meta?"OK":"Meta") + "</span></td></tr>";
   });
-  const tMeta = tRecTotal * META;
-  h += `<tr class="tr-tot"><td><strong>TOTAL</strong></td><td style="text-align:right"><strong>${fmt(tRecTotal)}</strong></td><td style="text-align:right"><strong>${fmt(tDespTotal)}</strong></td><td style="text-align:right"><strong>${fmt(resTotal)}</strong></td><td style="text-align:right"><strong>${(resTotal/tRecTotal*100).toFixed(1)}%</strong></td><td style="text-align:right"><strong>${fmt(tMeta)}</strong></td><td></td></tr>`;
-  document.getElementById('tbMensal').innerHTML = h;
+  var meta = tRt * META;
+  h += "<tr class='tr-t'><td><strong>TOTAL</strong></td><td style='text-align:right'><strong>" + fmt(tRt) + "</strong></td><td style='text-align:right'><strong>" + fmt(tDt) + "</strong></td><td style='text-align:right'><strong>" + fmt(rT) + "</strong></td><td style='text-align:right'><strong>" + (rT/tRt*100).toFixed(1) + "%</strong></td><td style='text-align:right'><strong>" + fmt(meta) + "</strong></td><td></td></tr>";
+  document.getElementById("tbMen").innerHTML = h;
 }
 
 function renderGraficos(meses) {
-  const dados = meses.map(m => db[m]);
-  function novoChart(id, type, data, opts={}) {
-    if (charts[id]) charts[id].destroy();
-    charts[id] = new Chart(document.getElementById(id).getContext('2d'), { type, data, options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}, ...opts } });
+  var d = meses.map(function(m){ return db[m]; });
+  function novo(id, type, data, opts) {
+    if (ch[id]) ch[id].destroy();
+    ch[id] = new Chart(document.getElementById(id).getContext("2d"), { type: type, data: data, options: Object.assign({ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:"bottom"}} }, opts||{}) });
   }
-  novoChart('cTend', 'line', {
-    labels: meses,
-    datasets: [
-      { label:'Receita', data:dados.map(d=>d.tRec), borderColor:'#27ae60', backgroundColor:'rgba(39,174,96,0.1)', tension:0.4, fill:true },
-      { label:'Despesa', data:dados.map(d=>d.tDesp), borderColor:'#e74c3c', backgroundColor:'rgba(231,76,60,0.1)', tension:0.4, fill:true }
-    ]
-  });
-  novoChart('cRes', 'bar', {
-    labels: meses,
-    datasets: [{ label:'Resultado', data:dados.map(d=>d.res), backgroundColor:dados.map(d=>d.res>=0?'rgba(39,174,96,.8)':'rgba(231,76,60,.8)') }]
-  });
-  novoChart('cMarg', 'line', {
-    labels: meses,
-    datasets: [
-      { label:'Margem Real (%)', data:dados.map(d=>+d.margem.toFixed(1)), borderColor:'#9b59b6', tension:0.4 },
-      { label:'Meta 25%', data:Array(meses.length).fill(25), borderColor:'#f39c12', borderDash:[6,4], tension:0 }
-    ]
-  });
-  const cats = {};
-  dados.forEach(d => d.desp.forEach(x => { cats[x.cat]=(cats[x.cat]||0)+x.valor; }));
-  novoChart('cDesp', 'doughnut', {
-    labels: Object.keys(cats),
-    datasets: [{ data:Object.values(cats), backgroundColor:['#3498db','#e74c3c','#f39c12','#27ae60','#9b59b6','#1abc9c','#34495e','#e67e22'] }]
-  });
+  novo("cT","line",{labels:meses,datasets:[{label:"Receita",data:d.map(function(x){return +x.totalRec||0;}),borderColor:"#27ae60",backgroundColor:"rgba(39,174,96,0.1)",tension:0.4,fill:true},{label:"Despesa",data:d.map(function(x){return +x.totalDesp||0;}),borderColor:"#e74c3c",backgroundColor:"rgba(231,76,60,0.1)",tension:0.4,fill:true}]});
+  novo("cR","bar",{labels:meses,datasets:[{label:"Resultado",data:d.map(function(x){return +x.resultado||0;}),backgroundColor:d.map(function(x){return (+x.resultado||0)>=0?"rgba(39,174,96,.8)":"rgba(231,76,60,.8)";})}]});
+  novo("cM","line",{labels:meses,datasets:[{label:"Margem Real (%)",data:d.map(function(x){return +(+x.margem||0).toFixed(1);}),borderColor:"#9b59b6",tension:0.4},{label:"Meta 25%",data:Array(meses.length).fill(25),borderColor:"#f39c12",borderDash:[6,4],tension:0}]});
+  var cats = {};
+  d.forEach(function(x){ (x.desp||[]).forEach(function(dd){ var c=dd.cat||"Diversos"; cats[c]=(cats[c]||0)+(+dd.valor||0); }); });
+  if (Object.keys(cats).length > 0) novo("cD","doughnut",{labels:Object.keys(cats),datasets:[{data:Object.values(cats),backgroundColor:["#3498db","#e74c3c","#f39c12","#27ae60","#9b59b6","#1abc9c","#34495e","#e67e22"]}]});
 }
 
-function renderProjecao(meses) {
-  const dados = meses.map(m => db[m]);
-  const n = dados.length;
-  const ultimo = dados[n-1];
-  const taxa = n > 1 ? ((ultimo.tRec - dados[0].tRec) / dados[0].tRec) / (n-1) : 0.05;
-  const taxaD = n > 1 ? ((ultimo.tDesp - dados[0].tDesp) / dados[0].tDesp) / (n-1) : 0.03;
-  const labels = [], pRec=[], pDesp=[], pRes=[], rows=[];
-  for (let i = 1; i <= 6; i++) {
-    const dt = new Date(); dt.setMonth(dt.getMonth()+i);
-    const label = dt.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
-    const rec = ultimo.tRec * (1 + taxa*i);
-    const desp = ultimo.tDesp * (1 + taxaD*i);
-    const res = rec - desp;
+function renderProj(meses) {
+  var d = meses.map(function(m){ return db[m]; });
+  var n = d.length;
+  var ul = d[n-1], pr = d[0];
+  var tR = +ul.totalRec||0, pR = +pr.totalRec||0;
+  var tD = +ul.totalDesp||0, pD = +pr.totalDesp||0;
+  var taxa = n > 1 && pR > 0 ? ((tR-pR)/pR)/(n-1) : 0.05;
+  var taxaD = n > 1 && pD > 0 ? ((tD-pD)/pD)/(n-1) : 0.03;
+  var labels=[], pRec=[], pDesp=[], pRes=[], rows=[];
+  for (var i = 1; i <= 6; i++) {
+    var dt = new Date(); dt.setMonth(dt.getMonth()+i);
+    var label = dt.toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+    var rec = tR*(1+taxa*i), desp = tD*(1+taxaD*i), res = rec-desp;
     labels.push(label); pRec.push(rec); pDesp.push(desp); pRes.push(res);
-    rows.push({label, rec, desp, res, m:(res/rec*100)});
+    rows.push({label:label,rec:rec,desp:desp,res:res,m:(res/rec*100)});
   }
-  document.getElementById('projInfo').innerHTML = `
-    <div class="al al-info">
-      <strong>📈 Tendência identificada:</strong> crescimento médio de <strong>${(taxa*100).toFixed(2)}%</strong> ao mês.<br>
-      Receita acumulada estimada para os próximos 6 meses: <strong>${fmt(pRec.reduce((s,v)=>s+v,0))}</strong>
-    </div>`;
-  if (charts['cProj']) charts['cProj'].destroy();
-  charts['cProj'] = new Chart(document.getElementById('cProj').getContext('2d'), {
-    type:'line',
-    data:{ labels, datasets:[
-      {label:'Receita',data:pRec,borderColor:'#27ae60',tension:0.4,fill:false},
-      {label:'Despesa',data:pDesp,borderColor:'#e74c3c',tension:0.4,fill:false},
-      {label:'Resultado',data:pRes,borderColor:'#2980b9',tension:0.4,fill:false}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
-  });
-  let tab = '<table><thead><tr><th>Mês</th><th style="text-align:right">Receita</th><th style="text-align:right">Despesa</th><th style="text-align:right">Resultado</th><th style="text-align:right">Margem</th></tr></thead><tbody>';
-  rows.forEach(r => { tab += `<tr><td>${r.label}</td><td style="text-align:right">${fmt(r.rec)}</td><td style="text-align:right">${fmt(r.desp)}</td><td style="text-align:right;color:${r.res>=0?'#27ae60':'#e74c3c'}">${fmt(r.res)}</td><td style="text-align:right">${r.m.toFixed(1)}%</td></tr>`; });
-  tab += '</tbody></table>';
-  document.getElementById('projTabela').innerHTML = tab;
+  document.getElementById("pInfo").innerHTML = "<div class='al al-i'><strong>Tendencia:</strong> crescimento medio de <strong>" + (taxa*100).toFixed(2) + "%</strong> ao mes. Receita estimada nos proximos 6 meses: <strong>" + fmt(pRec.reduce(function(s,v){return s+v;},0)) + "</strong></div>";
+  if (ch["cP"]) ch["cP"].destroy();
+  ch["cP"] = new Chart(document.getElementById("cP").getContext("2d"),{type:"line",data:{labels:labels,datasets:[{label:"Receita",data:pRec,borderColor:"#27ae60",tension:0.4,fill:false},{label:"Despesa",data:pDesp,borderColor:"#e74c3c",tension:0.4,fill:false},{label:"Resultado",data:pRes,borderColor:"#2980b9",tension:0.4,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"}}}});
+  var t = "<table><thead><tr><th>Mes</th><th style='text-align:right'>Receita</th><th style='text-align:right'>Despesa</th><th style='text-align:right'>Resultado</th><th style='text-align:right'>Margem</th></tr></thead><tbody>";
+  rows.forEach(function(r){ t += "<tr><td>" + r.label + "</td><td style='text-align:right'>" + fmt(r.rec) + "</td><td style='text-align:right'>" + fmt(r.desp) + "</td><td style='text-align:right;color:" + (r.res>=0?"#27ae60":"#e74c3c") + "'>" + fmt(r.res) + "</td><td style='text-align:right'>" + r.m.toFixed(1) + "%</td></tr>"; });
+  document.getElementById("pTab").innerHTML = t + "</tbody></table>";
 }
 
-function renderRec(tRec, tDesp, res, margem, ebitda, meses) {
-  const itens = [];
-  const dif = res - ebitda;
-  if (res >= ebitda) itens.push({tipo:'ok',icon:'🎯',titulo:'EBITDA Atingido!',msg:`Resultado ${fmt(res)} supera a meta ${fmt(ebitda)} em ${fmt(dif)}.`});
-  else itens.push({tipo:'err',icon:'⚠️',titulo:'EBITDA Abaixo da Meta',msg:`Faltam ${fmt(Math.abs(dif))} para atingir a meta de 25% (${fmt(ebitda)}).`});
-  if (margem < 15) itens.push({tipo:'warn',icon:'📉',titulo:'Margem Crítica',lista:['Margem atual: '+margem.toFixed(1)+'% — mínimo ideal é 20%','Renegocie os maiores contratos de custo','Analise cortes em despesas variáveis','Verifique oportunidades de aumento de receita']});
-  else if (margem < 25) itens.push({tipo:'warn',icon:'📊',titulo:'Margem Moderada — Pode Melhorar',lista:['Margem de '+margem.toFixed(1)+'% está próxima da meta de 25%','Foco em aumentar receita sem elevar custo proporcionalmente','Avalie novos contratos ou clientes']});
-  const cats = {};
-  meses.forEach(m => db[m].desp.forEach(d => { cats[d.cat]=(cats[d.cat]||0)+d.valor; }));
-  const top = Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
-  if (top) itens.push({tipo:'info',icon:'🔍',titulo:'Principal Despesa: '+top[0],msg:`${fmt(top[1])} (${(top[1]/tDesp*100).toFixed(1)}% das despesas totais). Analise possibilidades de otimização.`});
-  const reserva = tDesp / meses.length * 3;
-  itens.push({tipo:'info',icon:'💰',titulo:'Reserva de Emergência Recomendada',msg:`Mantenha ${fmt(reserva)} em caixa (3 meses de despesas). Protege contra imprevistos operacionais.`});
-  if (tRec > 0) itens.push({tipo:'ok',icon:'💡',titulo:'Oportunidade: Economia de 10%',msg:`Reduzindo despesas em 10%, você economiza ${fmt(tDesp*0.1)} ao ano — impacto direto no EBITDA.`});
-  itens.push({tipo:'ok',icon:'🎯',titulo:'Plano de Ação',lista:['Suba os dados todo mês para análise consistente','Monitore o EBITDA mensalmente — meta: 25%','Salve o backup JSON após cada mês processado','Revise despesas por categoria a cada trimestre','Busque aumentar receita sem elevar despesas na mesma proporção']});
-  let html = '';
-  itens.forEach(it => {
-    const c = it.tipo==='ok'?'ok':it.tipo==='err'?'err':it.tipo==='warn'?'warn':'info';
-    html += `<div class="al al-${c}"><strong>${it.icon} ${it.titulo}</strong>`;
-    if (it.msg) html += `<p style="margin-top:6px">${it.msg}</p>`;
-    if (it.lista) html += '<ul style="margin-top:8px;margin-left:20px;line-height:1.9">'+it.lista.map(x=>`<li>${x}</li>`).join('')+'</ul>';
-    html += '</div>';
+function renderRec(tR, tD, res, marg, ebitda, meses) {
+  var its = [];
+  var dif = res - ebitda;
+  if (res >= ebitda) its.push({t:"ok",tt:"EBITDA Atingido!",m:"Resultado " + fmt(res) + " supera a meta " + fmt(ebitda) + " em " + fmt(dif) + "."});
+  else its.push({t:"e",tt:"EBITDA Abaixo da Meta",m:"Faltam " + fmt(Math.abs(dif)) + " para atingir 25% (" + fmt(ebitda) + ")."});
+  if (marg < 15) its.push({t:"w",tt:"Margem Critica",l:["Margem atual: "+marg.toFixed(1)+"% - minimo ideal 20%","Renegocie contratos de maior custo","Analise cortes em despesas variaveis"]});
+  else if (marg < 25) its.push({t:"w",tt:"Margem Moderada",l:["Margem de "+marg.toFixed(1)+"% esta proxima da meta","Foco em aumentar receita sem elevar custo"]});
+  var reserva = meses.length > 0 ? tD/meses.length*3 : 0;
+  its.push({t:"i",tt:"Reserva de Emergencia",m:"Mantenha " + fmt(reserva) + " em caixa (3 meses de despesas)."});
+  its.push({t:"ok",tt:"Oportunidade de Economia",m:"Reduzindo despesas em 10%, economiza " + fmt(tD*0.1) + " ao ano."});
+  its.push({t:"ok",tt:"Plano de Acao",l:["Suba os dados todo mes - sistema salva automaticamente","Monitore o EBITDA mensalmente - meta: 25%","Revise despesas por categoria a cada trimestre","Busque aumentar receita sem elevar despesas na mesma proporcao"]});
+  var h = "";
+  its.forEach(function(it) {
+    var c = it.t==="ok"?"ok":it.t==="e"?"e":it.t==="w"?"w":"i";
+    h += "<div class='al al-" + c + "'><strong>" + it.tt + "</strong>";
+    if (it.m) h += "<p style='margin-top:6px'>" + it.m + "</p>";
+    if (it.l) { h += "<ul style='margin-top:8px;margin-left:20px;line-height:1.9'>"; it.l.forEach(function(x){ h += "<li>" + x + "</li>"; }); h += "</ul>"; }
+    h += "</div>";
   });
-  document.getElementById('recContent').innerHTML = html;
+  document.getElementById("rContent").innerHTML = h;
 }
 
-function tab(nome, el) {
-  document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(nome).classList.add('active');
-  el.classList.add('active');
+function tab2(el, nome) {
+  document.querySelectorAll(".pane").forEach(function(t){ t.classList.remove("on"); });
+  document.querySelectorAll(".tb").forEach(function(b){ b.classList.remove("on"); });
+  document.getElementById(nome).classList.add("on");
+  el.classList.add("on");
 }
 
 function extrairMes(nome) {
-  const m = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-  const c = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-  const n = nome.toLowerCase();
-  for (let i = 0; i < m.length; i++) if (n.includes(m[i])) return c[i];
-  return 'Mês ' + (Object.keys(db).length + 1);
+  var m=["janeiro","fevereiro","marco","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  var c=["Janeiro","Fevereiro","Marco","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+  var n = nome.toLowerCase();
+  for (var i=0;i<m.length;i++) if(n.includes(m[i])) return c[i];
+  return "Mes " + (Object.keys(db).length+1);
 }
 
 function fmt(v) {
-  if (isNaN(v)||v===null||v===undefined) return 'R$ 0,00';
-  return 'R$ ' + (+v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  if (isNaN(v)||v===null||v===undefined) return "R$ 0,00";
+  return "R$ " + (+v).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
+
+window.addEventListener("load", carregarTodos);
 </script>
 </body>
 </html>
